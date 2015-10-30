@@ -4,23 +4,23 @@
     <meta http-equiv="Content-Type" content="text/html; charset='UTF-8'" xml:lang="fr" />
     <title>jemdev\dbrm</title>
     <style type="text/css">/* <![CDATA[ */
-	html {
-	    font-family: verdana, 'sans-serif';
-	    font-size: 1em;
-	}
-	body {
-	    font-size: 80%;
-	}
-	pre {
-	    width: 80%;
-	    margin: auto;
-	    font-size: 120%;
-	    border: 1px dashed #ccc;
-	    padding: 1em;
-	    color: #000000;
-	    background-color: #ffffcc;
-	    font-weight: bold;
-	}
+    html {
+        font-family: verdana, 'sans-serif';
+        font-size: 1em;
+    }
+    body {
+        font-size: 80%;
+    }
+    pre {
+        width: 80%;
+        margin: auto;
+        font-size: 120%;
+        border: 1px dashed #ccc;
+        padding: 1em;
+        color: #000000;
+        background-color: #ffffcc;
+        font-weight: bold;
+    }
 
     /* ]]> */</style>
   </head>
@@ -39,23 +39,22 @@
           <li>
             PHP &gt;= 5.4
           </li>
-          <li>
-            <a href="https://github.com/hoaproject/Registry" title="Le package Hoa\Registry sur Github">Hoa\Registry</a>
-          </li>
         </ul>
+      </li>
+      <li>
+        Utilise : <a href="https://github.com/hoaproject/Registry" title="Le package Hoa\Registry sur Github">Hoa\Registry</a>
       </li>
       <li>
         Contact : <a href="http://jem-web.info/cv/message.html" title="Envoyer un message à Jean Molliné">Message</a>
       </li>
       <li>
-        Github : <a href="https://github.com/jemdev/dbrm" title="Le package jemdev\dbrm sur Github">github.com/jemdev/dbrm</a> *
+        Github : <a href="https://github.com/jemdev/dbrm" title="Le package jemdev\dbrm sur Github">github.com/jemdev/dbrm</a>
       </li>
       <li>
-        Packagist : <a href="https://packagist.org/packages/jemdev/dbrm" title="La package jemdev\dbrm sur Packagist">packagist.org/packages/jemdev/dbrm</a> *
+        Packagist : <a href="https://packagist.org/packages/jemdev/dbrm" title="La package jemdev\dbrm sur Packagist">packagist.org/packages/jemdev/dbrm</a>
       </li>
     </ul>
-    <p>(*) Liens invalides pour le moment</p>
-    <hr /><h1>Installation</h1>
+    <hr><h1>Installation</h1>
     <p>
       Avec Composer, ajouter ce qui suit dans la partie require de votre composer.json:
     </p>
@@ -63,7 +62,7 @@
         "jemdev/dbrm": "dev-master"
     }
 </code></pre>
-    <hr /><h1>Présentation et principe de fonctionnement.</h1>
+    <hr><h1>Présentation et principe de fonctionnement.</h1>
     <p>
       Ce package permet un accès aux données d'une base de données relationnelle.
       L'idée fondatrice part du principe qu'on peut faire des lectures sur des tables multiples mais que l'écriture ne peut se faire que sur une seule table à la fois.
@@ -80,6 +79,59 @@
       Lors de la connexion, si le fichier de configuration n'existe pas, il est automatiquement créé. Par la suite, si on modifie la structure du schéma, même si ce n'est que pour ajouter, modifier ou retirer une colonne dans une table, une méthode permet de régénérer ce fichier de configuration. Il m'est apparu comme très peu pratique de devoir créer une classe pour chacune des tables, ces modifications de structure induisant la ré-écriture partielle de certaines de ces classes à chaque fois. Ces classes sont donc gérées dynamiquement et sont, en réalité, des classes virtuelles.
     </p>
     <h2>Récupérer un objet de connexion</h2>
+    <h3>Configurer la connexion</h3>
+    <p>
+      Il est impératif de créer un fichier contenant les paramètres de connexion au SGBDR. Ce fichier doit être nommé <em>dbCnxConf.php</em>
+      et être formaté de la manière suivante :
+    </p>
+    <pre><code>    &lt;?php
+    /**
+     * Fichier de configuration des paramètres de connexion à la base de données.
+     * Ce fichier est généré automatiquement lors de la phase initiale d'installation.
+     */
+    $db_app_server  = 'localhost';          // Adresse du serveur de base de données
+    $db_app_schema  = 'testjem';            // Schéma à cartographier (base de données de l'application)
+    $db_app_user    = 'testjem';            // Utilisateur de l'application pouvant se connecter au SGBDR
+    $db_app_mdp     = 'testjem';            // Mot-de-passe de l'utilisateur de l'application
+    $db_app_type    = 'pgsql';              // Type de SGBDR, MySQL, PostGreSQL, Oracle, etc..
+    $db_app_port    = '5432';               // Port sur lequel on peut se connceter au serveur
+    $db_meta_schema = 'INFORMATION_SCHEMA'; // Schéma où pourront être collectées les informations sur le schéma de travail
+    /**
+     * Création des constantes globales de l'application
+     * NE PAS MODIFIER LES LIGNES SUIVANTES
+     */
+    defined("DB_ROOT_SERVER")       || define("DB_ROOT_SERVER",         $db_app_server);
+    defined("DB_ROOT_USER")         || define("DB_ROOT_USER",           $db_app_user);
+    defined("DB_ROOT_MDP")          || define("DB_ROOT_MDP",            $db_app_mdp);
+    defined("DB_ROOT_SCHEMA")       || define("DB_ROOT_SCHEMA",         $db_meta_schema);
+    defined("DB_ROOT_TYPEDB")       || define("DB_ROOT_TYPEDB",         $db_app_type);
+    defined("DB_ROOT_DBPORT")       || define("DB_ROOT_DBPORT",         $db_app_port);
+    defined("DB_APP_SCHEMA")        || define("DB_APP_SCHEMA",          $db_app_schema);
+    defined("DB_APP_SERVER")        || define("DB_APP_SERVER",          $db_app_server);
+    defined("DB_APP_USER")          || define("DB_APP_USER",            $db_app_user);
+    defined("DB_APP_PASSWORD")      || define("DB_APP_PASSWORD",        $db_app_mdp);
+</code></pre>
+    <h4>Les types de SGBDR supportés</h4>
+    <p>
+      À ce jour, ce n'est utilisable qu'avec MySQL et PostGreSQL. Je n'ai pas testé avec les forks de MySQL (MariaDb, percona et autres) mais dans la mesure où ils sont compatibles, ça ne devrait pas présenter de blocage. 
+      La valeur à utiliser pour la variable <em>$db_app_type</em>
+      :
+    </p>
+    <ul>
+      <li>
+        MySQL : <em>mysql</em>
+      </li>
+      <li>
+        PostGreSQL : <em>pgsql</em>
+      </li>
+    </ul>
+    <p>
+      Ce fichier devra être placé dans le répertoire où sont situés vos éventuels autres fichiers de configuration selon l'architecture de votre application. 
+      Il conviendra par la suite de pouvoir fournir en temps voulu le chemin absolu vers ce fichier. Dès le départ, s'il n'existe pas, un autre fichier de configuration sera généré automatiquement et sera indispensable au bon fonctionnement du package. Ce fichier sera généré en deux version, le premier nommé <em>dbConf.php</em>
+      pourra être assez facilement lu par n'importe quel développeur, le second qui sera privilégié pour l'utilisation par l'application sera nommé <em>dbConf_compact.php</em>
+      et correspondra strictement au même contenu mais compacté et ramené sur une seule ligne.
+      Ce fichier décrit en détail l'ensemble de la structure de données, tables, tables relationnelles et vues, colonnes, clés et autres informations détaillées. Il sera utilisé par les objets destinés à toutes les opérations en écriture, insertion, mises à jour ou suppression.
+    </p>
     <h3>Méthodes globales accessibles</h3>
     <p>
       Deux méthodes de base seront indispensables :
@@ -121,8 +173,8 @@
       Il n'y a pas de générateur de requêtes, à tout le moins pour l'instant. On devra écrire soi-même les requêtes en lecture qui devront être exécutées pour la collecte de données.
     </p>
     <p>
-      Chaque requête peut être paramétrée, sera exécutée avec PDO et retournera une donnée unique, une ligne de données ou bien un tableau de données.
-      On s'appuiera sur une instance de connexion qu'on définira au préalable.
+      Chaque requête peut être paramétrée, sera exécutée avec PDO et retournera une donnée unique, une ligne de données ou bien un tableau de données voire même un objet.
+      On s'appuiera sur une instance de la classe jemdev\dbrm\vue qu'on définira au préalable.
     </p>
     <p>
       Exemple : par convention, l'instance de connexion sera la variable « $oVue » et aura été définie en amont (entendez le mot de « vue » au sens SQL du terme).
@@ -140,7 +192,10 @@
     $infosUtilisateur = $oVue-&gt;fetchAssoc();
 </code></pre>
     <h4>Note:</h4>
-    <p>Le nom de l'objet $oVue dans cet exemple n'est pas anodin, il faut entendre le mot vue au sens SQL du terme. Une vue dans une base de données est une synthèse d'une requête d'interrogation de la base. On peut la voir comme une table virtuelle, définie par une requête.</p>
+    <p>
+      Le nom de l'objet $oVue dans cet exemple n'est pas anodin, il faut entendre le mot <em>vue</em>
+      au sens SQL du terme. Une vue dans une base de données est une synthèse d'une requête d'interrogation de la base. On peut la voir comme une table virtuelle, définie par une requête.
+    </p>
     <h2>Les méthodes accessibles</h2>
     <p>
       Le nom des méthodes est inspiré de celles qu'on emploie avec l'extension MySQL. Le retours sont bien entendu similaires dans leur forme.
@@ -200,7 +255,7 @@
         startTransaction() : Démarre une transaction SQL;
       </li>
       <li>
-        finishTransaction($bOk) : Termine une transaction SQL, le paramètre attendu est un booléen indiquant si on doit effectuer un COMMIT ou un ROLLBACK;
+        finishTransaction($bOk) : Termine une transaction SQL, le paramètre attendu est un booléen indiquant si on doit effectuer un COMMIT ou un ROLLBACK; 
       </li>
     </ul>
     <h2>Mise en pratique</h2>
@@ -298,7 +353,7 @@ $enreg = $oVue-&gt;execute();
     <p>
       Il n'a pas été prévu pour l'instant de pouvoir effectuer une mise à jour ou encore une suppression de lignes multiples dans la mesure où une mise à jour s'effectuera uniquement en fonction de la valeur d'une clé primaire. Pratiquant l'utilisation au quotidien de ce package depuis déjà de nombreuses années et ce sur une application de gestion, je n'ai en réalité jamais eu besoin d'implémenter cette possibilité. Et pour les rares fois où ça doit se produire, je peux contourner ce manque en collectant la liste des clé primaires à prendre en compte dans une mise à jour et chaque ligne sera traitée individuellement dans une boucle.
     </p>
-    <hr /><h1>Une gestion de cache dynamique (expérimental)</h1>
+    <hr><h1>Une gestion de cache dynamique (expérimental)</h1>
     <p>
       Un problème d'accès à la configuration du serveur MySQL sur lequel je travaillais m'interdisait de paramétrer le cache intégré et même tout simplement de l'activer par défaut. Souhaitant pouvoir disposer d'un système de gestion de cache de requêtes, j'ai ajouté des classes permettant de gérer cet aspect.
     </p>
@@ -311,13 +366,13 @@ $enreg = $oVue-&gt;execute();
     <p>
       Par défaut, le cache n'est pas activé, et si vous avez la possibilité de gérer le cache intégré de votre SGBDR, ce sera alors une solution préférable et plus performante.
     </p>
-    <hr /><h1>Conclusion</h1>
+    <hr><h1>Conclusion</h1>
     <p>
       Ce package se veut simple d'utilisation de façon à ne pas perdre le développeur dans les complications de l'implémentation, et ce sans avoir à se préoccuper du type de serveur de base de données utilisé, que ce soit MySQL, Oracle, SQL-Server ou tout autre serveur.
     </p>
     <h2>À venir</h2>
     <p>
-      Il reste cependant à développer le code qui permettra d'utiliser des SGBDR autres que MySQL, codes qui pour l'instant n'existent pas. Il s'agit de pouvoir construire le tableau de configuration d'un schéma de données. MySQL implémente INFORMATION_SCHEMA, ce qui facilite grandement ce travail, mais tous les SGBDR ne l'implémentent pas, comme par exemple Oracle. Il existe cependant d'autres manières de collecter ces informations pour aboutir au même résultat.
+      Il reste cependant à développer le code qui permettra d'utiliser des SGBDR autres que MySQL ou PostGreSQL, codes qui pour l'instant n'existent pas. Il s'agit de pouvoir construire le tableau de configuration d'un schéma de données. MySQL et PostGreSQL implémentent INFORMATION_SCHEMA, ce qui facilite grandement ce travail, mais tous les SGBDR ne l'implémentent pas, comme par exemple Oracle. Il existe cependant d'autres manière de collecter ces informations pour aboutir au même résultat.
     </p>
     <p>
       Par la suite, le fonctionnement s'appuyant sur PDO, l'intégration de jemdev\dbrm pourra se faire dans n'importe quel projet.
