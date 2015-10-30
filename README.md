@@ -45,7 +45,7 @@ $db_app_schema  = 'testjem';            // Schéma à cartographier (base de donné
 $db_app_user    = 'testjem';            // Utilisateur de l'application pouvant se connecter au SGBDR
 $db_app_mdp     = 'testjem';            // Mot-de-passe de l'utilisateur de l'application
 $db_app_type    = 'pgsql';              // Type de SGBDR, MySQL, PostGreSQL, Oracle, etc..
-$db_app_port    = '5432';               // Port sur lequel on peut se connceter au serveur
+$db_app_port    = '5432';               // Port sur lequel on peut se connecter au serveur
 $db_meta_schema = 'INFORMATION_SCHEMA'; // Schéma où pourront être collectées les informations sur le schéma de travail
 /**
  * Création des constantes globales de l'application
