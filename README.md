@@ -3,7 +3,7 @@
 - Licence : [CeCILL V2][]
 - Pré-requis :
  - PHP >= 5.4
- - [Hoa\Registry][]
+- Utilise : [Hoa\Registry][]
 - Contact : [Message][]
 - Github : [github.com/jemdev/dbrm][]
 - Packagist : [packagist.org/packages/jemdev/dbrm][]
@@ -253,7 +253,7 @@ Par défaut, le cache n'est pas activé, et si vous avez la possibilité de gérer l
 # Conclusion
 Ce package se veut simple d'utilisation de façon à ne pas perdre le développeur dans les complications de l'implémentation, et ce sans avoir à se préoccuper du type de serveur de base de données utilisé, que ce soit MySQL, Oracle, SQL-Server ou tout autre serveur.
 ## À venir
-Il reste cependant à développer le code qui permettra d'utiliser des SGBDR autres que MySQL, codes qui pour l'instant n'existent pas. Il s'agit de pouvoir construire le tableau de configuration d'un schéma de données. MySQL implémente INFORMATION_SCHEMA, ce qui facilite grandement ce travail, amis tous les SGBDR ne l'implémentent pas, comme par exemple Oracle. Il existe cependant d'autres manière de collecter ces informations pour aboutir au même résultat.
+Il reste cependant à développer le code qui permettra d'utiliser des SGBDR autres que MySQL ou PostGreSQL, codes qui pour l'instant n'existent pas. Il s'agit de pouvoir construire le tableau de configuration d'un schéma de données. MySQL et PostGreSQL implémentent INFORMATION_SCHEMA, ce qui facilite grandement ce travail, mais tous les SGBDR ne l'implémentent pas, comme par exemple Oracle. Il existe cependant d'autres manière de collecter ces informations pour aboutir au même résultat.
 
 Par la suite, le fonctionnement s'appuyant sur PDO, l'intégration de jemdev\dbrm pourra se faire dans n'importe quel projet.
 
