@@ -14,7 +14,7 @@ Avec Composer, ajouter ce qui suit dans la partie require de votre composer.json
 
 ```
 {
-  "jemdev/dbrm": "dev-master"
+  "jemdev/dbrm": "2.0.*"
 }
 ```
 
