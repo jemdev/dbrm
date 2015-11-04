@@ -328,7 +328,7 @@ abstract class execute
                         'infos'      => $sth->errorInfo()
                     );
                     $this->_aDbErreurs[] = array(
-                        "L'exécution de  la requête « ". $sql ." » a échoué;". sprintf('%s', $sth->debugDumpParams()),
+                        "L'exécution a échoué.". PHP_EOL ."Requête : ". $sql .";". PHP_EOL ."Paramètres : ". sprintf('%s', print_r($params, true)) .";",
                         'Message : '. $sth->errorInfo(),
                         'Trace : '. debug_backtrace()
                     );
@@ -337,7 +337,7 @@ abstract class execute
             catch (\PDOException $p)
             {
                 $this->_aDbErreurs[] = array(
-                    "L'exécution de  la requête ". $sql ." a échoué;". sprintf('%s', $sth->debugDumpParams()),
+                    "L'exécution a échoué.". PHP_EOL ."Requête : ". $sql .";". PHP_EOL ."Paramètres : ". sprintf('%s', print_r($params, true)) .";",
                     'Message : '. $p->getMessage(),
                     'Trace : '.$p->getTraceAsString()
                 );
@@ -345,7 +345,7 @@ abstract class execute
             catch (\Exception $e)
             {
                 $this->_aDbErreurs[] = array(
-                    "L'exécution de  la requête ". $sql ." a échoué". sprintf('%s', $sth->debugDumpParams()),
+                    "L'exécution a échoué.". PHP_EOL ."Requête : ". $sql ."". PHP_EOL ."Paramètres : ". sprintf('%s', print_r($params, true)) .";",
                     'Message : '. $e->getMessage(),
                     'Trace : '.$e->getTraceAsString()
                 );
