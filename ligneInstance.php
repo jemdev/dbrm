@@ -1,11 +1,11 @@
 <?php
+/**
+ * @package jemdev
+ */
 namespace jemdev\dbrm;
 use jemdev\dbrm\abstr\execute;
 use jemdev\dbrm\Exception;
 use jemdev\dbrm\cache\cache;
-/**
- * @package jemdev
- */
 /**
  * Classe implémentant un objet pour une table.
  *
@@ -16,7 +16,7 @@ use jemdev\dbrm\cache\cache;
  *
  * Créé le 01/05/2008
  * @author      Jean Molliné <jmolline@gmail.com>
- * @since       PHP 5.x.x
+ * @since       PHP 5.4.x
  * @package     jemdev
  * @subpackage  dbrm
  * @todo Implémentation d'une méthode permettant d'affecter une fonction SQL en valeur à
@@ -142,9 +142,11 @@ class ligneInstance extends execute
      * multiton, la propriété dbTable::_aInstances contenant
      * tous les objets instanciés via cette classe.
      *
+     * @param unknown $_schema          Nom du schéma de données sur lequel seront collectées les informations
      * @param  String $_sNomTable       Nom de la table
-     * @param  String $_aliasTable      Alias du nom de table
      * @param  String $aConfig          Tableau où sont enregistrés les paramètres des tables.
+     * @param  String $_aliasTable      Alias du nom de table
+     * @throws Exception
      *
      * @todo    Comment intégrer les fonctions et autres procédures stockées...?
      */
@@ -803,6 +805,13 @@ class ligneInstance extends execute
         return $fin;
     }
 
+    /**
+     * Construction d'une requête d'insertion
+     * @param   array   $aCols      Liste des colonnes de la table
+     * @param   array   $aParams    Liste des paramètres de la requête
+     * @param   array   $in         Liste des valeurs des paramètres
+     * @return  boolean             Retourne true si l'insertion s'est correctement déroulée.
+     */
     private function _inserer($aCols, $aParams, $in)
     {
         /* Code d'ajout de données dans la base */

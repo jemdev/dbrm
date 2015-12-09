@@ -204,7 +204,7 @@ class getSchemaInfosMysql implements getSchemaInfos
         return $aRef;
     }
 
-    public function _getViewTables($viewName)
+    public function getViewTables($viewName)
     {
         $sql  = "SELECT ".
                 "  view_definition ".
