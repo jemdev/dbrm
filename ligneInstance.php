@@ -3,8 +3,8 @@
  * @package jemdev
  */
 namespace jemdev\dbrm;
-use jemdev\dbrm\abstr\execute;
 use jemdev\dbrm\Exception;
+use jemdev\dbrm\abstr\execute;
 use jemdev\dbrm\cache\cache;
 /**
  * Classe implémentant un objet pour une table.
