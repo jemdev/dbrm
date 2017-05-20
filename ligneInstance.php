@@ -339,7 +339,7 @@ class ligneInstance extends execute
                 $typeData = 'null';
                 try
                 {
-                    if(empty($valeur))
+                    if(empty($valeur) && $valeur !== '0' && $valeur !== 0)
                     {
                         /**
                          * Si la valeur envoyée est vide ou nulle, soit la colonne est « nullable », soit
