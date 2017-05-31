@@ -11,6 +11,7 @@ use jemdev\dbrm\init\genereconf;
  * que des instances nécessaires pour toutes les opération SQL.
  *
  * @author Cyrano
+ * @version     2.0 Ré-écriture du package intégrant les NAMESPACES
  *
  */
 class dbrm
