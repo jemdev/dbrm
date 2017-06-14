@@ -19,7 +19,7 @@ interface getSchemaInfos
      * principe qu'une et une seule colonne en clé primaire.
      * @return array
      */
-    function getTables();
+    public function getTables();
     /**
      * On récupère la liste des tables relationnelles.
      *
@@ -27,37 +27,37 @@ interface getSchemaInfos
      * composite.
      * @return array
      */
-    function getRelations();
+    public function getRelations();
     /**
      * Liste les contraintes d'intégrité référentielles si elles existent
      * @return array
      */
-    function getConstraints();
+    public function getConstraints();
     /**
      * Liste les vues qui ont été définies
      * @return array
      */
-    function getVues();
+    public function getVues();
     /**
      * Liste le détail des informations sur les colonnes d'une table indiquée en paramètre.
      *
      * @param string $table
      * @return array
      */
-    function getInfosColonnes($table);
+    public function getInfosColonnes($table);
     /**
      * Liste les clés étrangères dans une table et les informations sur les tables référencées.
      * @param   string  $table Nom de la table vérifiée
      * @return  array
      */
-    function getReferencesFK($table);
+    public function getReferencesFK($table);
 
     /**
      * Liste les tables référencées dans la construction de la VUE.
      * @param   string  $viewName Nom de la vue testée.
      * @return  array
      */
-    function getViewTables($viewName);
+    public function getViewTables($viewName);
 }
 
 ?>

@@ -233,6 +233,30 @@ class vue extends execute
         return $this->_fetchDatas($this->_sSql, $this->_aParams, $out);
     }
 
+    /**
+     *
+     * @param   String $nomTable Nom de la table dont on veut un instance
+     * @return  ligneInstance
+     */
+    public function getInstanceLigneTable($nomTable)
+    {
+        require_once(CONF .'appConf.php');
+        require(DB_CONF);
+        /**
+         * Chargement du système d'accès aux données et aux objets.
+         * Attention au chemin, il est relatif au fichier courant.
+        */
+        if(isset($dbConf))
+        {
+            $oTable = new table(DB_APP_SCHEMA, $nomTable, $dbConf[0]);
+            $oInstanceLigne = $oTable->getInstance();
+        }
+        else
+        {
+            $oInstanceLigne = false;
+        }
+        return $oInstanceLigne;
+    }
 
     public function __destruct()
     {

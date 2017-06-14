@@ -1,11 +1,11 @@
 <?php
-/**
- * @package jemdev
- */
 namespace jemdev\dbrm;
 use jemdev\dbrm\Exception;
 use jemdev\dbrm\abstr\execute;
 use jemdev\dbrm\cache\cache;
+/**
+ * @package jemdev
+ */
 /**
  * Classe implémentant un objet pour une table.
  *
@@ -142,11 +142,11 @@ class ligneInstance extends execute
      * multiton, la propriété dbTable::_aInstances contenant
      * tous les objets instanciés via cette classe.
      *
-     * @param unknown $_schema          Nom du schéma de données sur lequel seront collectées les informations
-     * @param  String $_sNomTable       Nom de la table
-     * @param  String $aConfig          Tableau où sont enregistrés les paramètres des tables.
-     * @param  String $_aliasTable      Alias du nom de table
-     * @throws Exception
+     * @param   String $_schema          Nom du schéma de données sur lequel seront collectées les informations
+     * @param   String $_sNomTable       Nom de la table
+     * @param   String $aConfig          Tableau où sont enregistrés les paramètres des tables.
+     * @param   String $_aliasTable      Alias du nom de table
+     * @throws  Exception
      *
      * @todo    Comment intégrer les fonctions et autres procédures stockées...?
      */

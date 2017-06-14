@@ -2,7 +2,7 @@
 - Auteur : Jean Molliné
 - Licence : [CeCILL V2][]
 - Pré-requis :
- - PHP >= 5.4
+  - PHP >= 5.4
 - Utilise : [Hoa\Registry][]
 - Contact : [Message][]
 - Github : [github.com/jemdev/dbrm][]
@@ -64,10 +64,10 @@ defined("DB_APP_PASSWORD")      || define("DB_APP_PASSWORD",        $db_app_mdp)
 ```
 
 #### Les types de SGBDR supportés
-À ce jour, ce n'est utilisable qu'avec MySQL et PostGreSQL. Je n'ai pas testé avec les forks de MySQL (MariaDb, percona et autres) mais dans la mesure où ils sont compatibles, ça ne devrait pas présenter de blocage.
+À ce jour, ce n'est utilisable qu'avec MySQL et PostGreSQL. Je n'ai pas testé avec les forks de MySQL autres que MariaDb (percona et autres) mais dans la mesure où ils sont compatibles, ça ne devrait pas présenter de blocage.
 La valeur à utiliser pour la variable *$db_app_type* :
 
-- MySQL : *mysql*
+- MySQL : *mysql* (fonctionne avec ce type pour MariaDB)
 - PostGreSQL : *pgsql*
 
 Ce fichier devra être placé dans le répertoire où sont situés vos éventuels autres fichiers de configuration selon l'architecture de votre application.

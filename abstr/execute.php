@@ -43,8 +43,8 @@ defined('CACHE_TYPE')       || define('CACHE_TYPE',     'file');
  */
 abstract class execute
 {
-    const WHERE_AND = 'AND' ;
-    const WHERE_OR  = 'OR' ;
+    const WHERE_AND                 = 'AND' ;
+    const WHERE_OR                  = 'OR' ;
     private $_schema;
     private $_server;
     private $_user;
@@ -52,7 +52,7 @@ abstract class execute
     protected $_lastId;
     private $_cnx;
     private $_dbh;
-    protected $_bTransaction      = false;
+    protected $_bTransaction        = false;
     protected $_aDbErreurs          = array();
     protected $_aConfig;
     /**
@@ -60,7 +60,7 @@ abstract class execute
      *
      * @var Boolean
      */
-    protected $_bConnecte         = false;
+    protected $_bConnecte           = false;
     /**
      * Instance de jem\db\cache
      *
@@ -75,14 +75,14 @@ abstract class execute
      * nécessaire, la constante servant à rétablir le satut normal de l'application.
      * @var Boolean
      */
-    protected $_bCacheRequetes    = false;
+    protected $_bCacheRequetes      = false;
     /**
      * Liste des tables par vue.
      * Pour la gestion du cache, si une de ces tables reçoit une écriture, le
      * cache de données devra être renouvelé.
      * @var Array
      */
-    protected $_aTablesVues       = array();
+    protected $_aTablesVues         = array();
     /**
      * Indication permettant ou non la mise en cache du résultat si le
      * cache de requête est activé.
@@ -161,7 +161,7 @@ abstract class execute
                     'Trace : '. $p->getTraceAsString()
                 );
             }
-            catch (\Exception $e)
+            catch (Exception $e)
             {
                 $this->_bConnecte = false;
                 $this->_aDbErreurs[] = array(
