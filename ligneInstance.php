@@ -246,7 +246,7 @@ class ligneInstance extends execute
      */
     static public function getInstance($_schema, $_sNomTable, $aConfig, $_aliasTable = null)
     {
-        if (! isset($_aliasTable))
+        if (!isset($_aliasTable))
         {
             $_aliasTable = $_sNomTable;
         }

@@ -234,7 +234,12 @@ class vue extends execute
     }
 
     /**
-     *
+     * Attention :
+     *    - la constante « CONF » définit le répertoire où est stocké le fichier
+     *      de configuration de l abase de données généré; @see jemdev\dbrm\init\genereconf
+     *    - le fichier « appConf.php » contient les constantes définies pour l'application;
+     *    - la constante « DB_CONF » contient le nom du fichier de configuration;
+     *    - la constante « DB_APP_SCHEMA » contient le nom du schéma de données.
      * @param   String $nomTable Nom de la table dont on veut un instance
      * @return  ligneInstance
      */
