@@ -1,6 +1,6 @@
 <?php
 namespace jemdev\dbrm;
-use jemdev\dbrm\Exception;
+use jemdev\dbrm\jemdevDbrmException;
 use jemdev\dbrm\abstr\execute;
 use jemdev\dbrm\cache\cache;
 /**
@@ -146,7 +146,7 @@ class ligneInstance extends execute
      * @param   String $_sNomTable       Nom de la table
      * @param   String $aConfig          Tableau où sont enregistrés les paramètres des tables.
      * @param   String $_aliasTable      Alias du nom de table
-     * @throws  Exception
+     * @throws  jemdevDbrmException
      *
      * @todo    Comment intégrer les fonctions et autres procédures stockées...?
      */
@@ -171,7 +171,6 @@ class ligneInstance extends execute
             {
                 $this->_aCles[] = $k;
             }
-            // $this->_aCles['alias'] = $_aliasTable;
             $this->_aPk = $aConfig['tables'][$_sNomTable]['key']['pk'];
             /**
              * S'il s'agit d'une table, on bloque l'accès en écriture sur
@@ -191,7 +190,6 @@ class ligneInstance extends execute
             {
                 $this->_aCles[] = $k;
             }
-            // $this->_aCles['alias'] = $_aliasTable;
             $this->_aPk = $aConfig['relations'][$_sNomTable]['key']['pk'];
             /**
              * Dans une table relationnelle, la clé primaire étant
@@ -222,7 +220,7 @@ class ligneInstance extends execute
              * Si on a trouvé nulle part de correspondance, on jette une exception.
              */
             $msg = "La table &laquo; ". $_sNomTable ." &raquo; est inexistante";
-            throw new Exception($msg, E_USER_ERROR);
+            throw new jemdevDbrmException($msg, E_USER_ERROR);
         }
         $this->_connect($aConfig['schema']);
     }
@@ -263,11 +261,11 @@ class ligneInstance extends execute
                     }
                 }
             }
-            catch (Exception $dbe)
+            catch (jemdevDbrmException $dbe)
             {
                 return $dbe;
             }
-            catch (Exception $e)
+            catch (jemdevDbrmException $e)
             {
                 return $e;
             }
@@ -283,7 +281,7 @@ class ligneInstance extends execute
     public function __clone()
     {
         trigger_error("Clonage non autorisé : utilisez un alias de table différent.", E_USER_WARNING);
-        throw new Exception("Clonage non autorisé : utilisez un alias de table différent.");
+        throw new jemdevDbrmException("Clonage non autorisé : utilisez un alias de table différent.");
     }
 
     /**
@@ -359,7 +357,7 @@ class ligneInstance extends execute
                             }
                             else
                             {
-                                throw new Exception("Une valeur est obligatoirement requise dans la table ". $this->_sNomTable ." pour la colonne ". $colonne, E_USER_WARNING);
+                                throw new jemdevDbrmException("Une valeur est obligatoirement requise dans la table ". $this->_sNomTable ." pour la colonne ". $colonne, E_USER_WARNING);
                             }
                         }
                     }
@@ -374,14 +372,14 @@ class ligneInstance extends execute
                             case 'CHAR':
                                 if(!is_null($this->_aConfigTable['fields'][$colonne]['length']) && $l > $this->_aConfigTable['fields'][$colonne]['length'])
                                 {
-                                    throw new Exception("La longueur de la valeur envoyée excède l'espace disponible pour la colonne ". $colonne ."; longueur reçue : ". $l .", maximum autorisé : ". $this->_aConfigTable['fields'][$colonne]['length'], E_USER_WARNING);
+                                    throw new jemdevDbrmException("La longueur de la valeur envoyée excède l'espace disponible pour la colonne ". $colonne ."; longueur reçue : ". $l .", maximum autorisé : ". $this->_aConfigTable['fields'][$colonne]['length'], E_USER_WARNING);
                                 }
                                 $typeData = 'string';
                                 break;
                             case 'ENUM':
                                 if(!in_array($valeur, $this->_aConfigTable['fields'][$colonne]['attr']['vals']))
                                 {
-                                    throw new Exception("La valeur reçue pour la colonne ". $colonne ." n'est pas répertoriée dans les valeurs possibles (". implode(", ", $this->_aConfigTable['fields'][$colonne]['attr']['vals']) .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." n'est pas répertoriée dans les valeurs possibles (". implode(", ", $this->_aConfigTable['fields'][$colonne]['attr']['vals']) .")", E_USER_WARNING);
                                 }
                                 $typeData = 'string';
                                 break;
@@ -393,7 +391,7 @@ class ligneInstance extends execute
                             case 'FLOAT':
                                 if(!is_numeric($valeur))
                                 {
-                                    throw new Exception("La valeur reçue pour la colonne ". $colonne ." n'est pas numérique (reçu «". $valeur ."»)", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." n'est pas numérique (reçu «". $valeur ."»)", E_USER_WARNING);
                                 }
                                 if(preg_match("#^[0-9]+$#", $valeur))
                                 {
@@ -408,7 +406,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,63) && $valeur < pow(2,63)))
                                 )
                                 {
-                                    throw new Exception("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,63) .", maximum ". pow(2,63)-1 .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,63) .", maximum ". pow(2,63)-1 .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -417,7 +415,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,31) && $valeur < pow(2,31)))
                                 )
                                 {
-                                    throw new Exception("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,31) .", maximum ". pow(2,31)-1 .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,31) .", maximum ". pow(2,31)-1 .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -426,7 +424,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,23) && $valeur < pow(2,23)))
                                 )
                                 {
-                                    throw new Exception("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,23) .", maximum ". pow(2,23)-1 .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,23) .", maximum ". pow(2,23)-1 .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -435,7 +433,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,15) && $valeur < pow(2,15)))
                                 )
                                 {
-                                    throw new Exception("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,15) .", maximum ". pow(2,15)-1 .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,15) .", maximum ". pow(2,15)-1 .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -444,7 +442,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,7) && $valeur < pow(2,7)))
                                 )
                                 {
-                                    throw new Exception("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,7) .", maximum ". pow(2,7)-1 .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,7) .", maximum ". pow(2,7)-1 .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -463,7 +461,7 @@ class ligneInstance extends execute
                                     (false === ($nombre <= $max && $nombre >= $min))
                                 )
                                 {
-                                    throw new Exception("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". $min .", maximum ". $max .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". $min .", maximum ". $max .")", E_USER_WARNING);
                                 }
                                 $typeData = 'float';
                                 break;
@@ -471,7 +469,7 @@ class ligneInstance extends execute
                                 $masque = "#^(:?[0-2])?[0-9]{1,3}-(:?0[1-9]|1[0-2])-(?:0[1-9]|[1-2][0-9]|3[0-1])$#";
                                 if($valeur != '0000-00-00' && !preg_match($masque, $valeur))
                                 {
-                                    throw new Exception("La date envoyée pour la colonne ". $colonne ." n'est pas au format approprié AAAA-MM-DD, reçu «". $valeur ."»", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La date envoyée pour la colonne ". $colonne ." n'est pas au format approprié AAAA-MM-DD, reçu «". $valeur ."»", E_USER_WARNING);
                                 }
                                 $typeData = 'string';
                                 break;
@@ -479,7 +477,7 @@ class ligneInstance extends execute
                                 $masque = "#^(:?[0-2])?[0-9]{1,3}-(:?0[1-9]|1[0-2])-(?:0[1-9]|[1-2][0-9]|3[0-1])\s(?:[0-1][0-9]|2[0-3]):(:?[0-5][0-9])(:(:?[0-5][0-9]))?$#";
                                 if($valeur != '0000-00-00 00:00:00' && !preg_match($masque, $valeur))
                                 {
-                                    throw new Exception("La date envoyée pour la colonne ". $colonne ." n'est pas au format approprié AAAA-MM-DD HH:MI[:SC], reçu «". $valeur ."»", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La date envoyée pour la colonne ". $colonne ." n'est pas au format approprié AAAA-MM-DD HH:MI[:SC], reçu «". $valeur ."»", E_USER_WARNING);
                                 }
                                 $typeData = 'string';
                                 break;
@@ -487,7 +485,7 @@ class ligneInstance extends execute
                                 $lm = (!is_null($this->_aConfigTable['fields'][$colonne]['length'])) ? $this->_aConfigTable['fields'][$colonne]['length'] : pow(2,16);
                                 if($l > $lm)
                                 {
-                                    throw new Exception("La longueur de la valeur envoyée excède l'espace disponible pour la colonne ". $colonne ."; longueur reçue : ". $l .", maximum autorisé : ". $lm, E_USER_WARNING);
+                                    throw new jemdevDbrmException("La longueur de la valeur envoyée excède l'espace disponible pour la colonne ". $colonne ."; longueur reçue : ". $l .", maximum autorisé : ". $lm, E_USER_WARNING);
                                 }
                                 $typeData = 'string';
                                 break;
@@ -498,13 +496,13 @@ class ligneInstance extends execute
                     $this->{$colonne} = $valeur;
                     settype($this->{$colonne}, $typeData);
                 }
-                catch (Exception $e)
+                catch (jemdevDbrmException $e)
                 {
                     echo('<pre style="font-size: 11px; text-align: left;">' . "\n");
                     var_dump($e);
                     echo("</pre>\n");
                 }
-                catch (Exception $e)
+                catch (jemdevDbrmException $e)
                 {
                     echo('<pre style="font-size: 11px; text-align: left;">' . "\n");
                     var_dump($e);
@@ -656,7 +654,7 @@ class ligneInstance extends execute
             {
                 $sErreurs = debug_backtrace();
                 $msg = isset($retour[0][1]) ? PHP_EOL . $retour[0][1] .";". PHP_EOL : null;
-                $retour = new Exception("Requête «". $sql ."»;". PHP_EOL . $msg ."Trace :". PHP_EOL . $this->_setTraceMessage($sErreurs), E_USER_ERROR);
+                $retour = new jemdevDbrmException("Requête «". $sql ."»;". PHP_EOL . $msg ."Trace :". PHP_EOL . $this->_setTraceMessage($sErreurs), E_USER_ERROR);
             }
             else
             {
@@ -711,7 +709,7 @@ class ligneInstance extends execute
                 }
                 if($aField['null'] === false && $bv == true)
                 {
-                    throw new Exception('La colonne '. $cle .' (table « '. $this->_sNomTable .' ») requiert obligatoirement une valeur. (aucune valeur valide reçue)', E_USER_WARNING);
+                    throw new jemdevDbrmException('La colonne '. $cle .' (table « '. $this->_sNomTable .' ») requiert obligatoirement une valeur. (aucune valeur valide reçue)', E_USER_WARNING);
                 }
                 else
                 {

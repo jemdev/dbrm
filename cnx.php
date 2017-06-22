@@ -1,6 +1,6 @@
 <?php
 namespace jemdev\dbrm;
-use jemdev\dbrm\Exception;
+use jemdev\dbrm\jemdevDbrmException;
 use jemdev\dbrm\vue;
 use jemdev\dbrm\table;
 use jemdev\dbrm\init\genereconf;
@@ -76,13 +76,13 @@ class cnx
                 }
                 else
                 {
-                    throw new Exception(self::ERREUR_FICHIER_CONF, E_USER_NOTICE);
+                    throw new jemdevDbrmException(self::ERREUR_FICHIER_CONF, E_USER_NOTICE);
                 }
             }
         }
         else
         {
-            throw new Exception(self::ERREUR_CONF_NULL , E_USER_NOTICE);
+            throw new jemdevDbrmException(self::ERREUR_CONF_NULL , E_USER_NOTICE);
         }
         $this->_aProps = array(
                 'out' => array(
@@ -117,7 +117,7 @@ class cnx
                         }
                         else
                         {
-                            throw new Exception(self::ERREUR_CONF_NULL , E_USER_NOTICE);
+                            throw new jemdevDbrmException(self::ERREUR_CONF_NULL , E_USER_NOTICE);
                         }
                     }
                     $objet = $this->_oVue;
@@ -133,7 +133,7 @@ class cnx
         }
         else
         {
-            throw new Exception(sprintf(self::ERREUR_ACCES_PROP, $prop), E_USER_NOTICE);
+            throw new jemdevDbrmException(sprintf(self::ERREUR_ACCES_PROP, $prop), E_USER_NOTICE);
         }
     }
 
@@ -158,7 +158,7 @@ class cnx
         }
         else
         {
-            throw new Exception(sprintf(self::ERREUR_ACCES_PROP, $prop), E_USER_NOTICE);
+            throw new jemdevDbrmException(sprintf(self::ERREUR_ACCES_PROP, $prop), E_USER_NOTICE);
         }
     }
 
@@ -189,7 +189,7 @@ class cnx
         }
         else
         {
-            throw new Exception(sprintf(self::ERREUR_CALL_METHODE, $methode), E_USER_NOTICE);
+            throw new jemdevDbrmException(sprintf(self::ERREUR_CALL_METHODE, $methode), E_USER_NOTICE);
         }
         return $instance;
     }

@@ -16,7 +16,7 @@ namespace jemdev\dbrm;
  * @subpackage  dbrm
  * @author      Jean Molliné <jmolline@gmail.com>
  */
-class Exception extends \Exception
+class jemdevDbrmException extends \Exception
 {
     /**
      * Redéfinition de l'exception.
@@ -25,7 +25,7 @@ class Exception extends \Exception
      *
      * @param   String      $message        Message décrivant l'erreur
      * @param   Int         $code           Code de l'erreur
-     * @param   \Exception  $precedente     Précédente exception
+     * @param   \jemdevDbrmException  $precedente     Précédente exception
      */
     public function __construct($message = null, $code = 0, $precedente = null)
     {

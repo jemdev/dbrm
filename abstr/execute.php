@@ -1,6 +1,6 @@
 <?php
 namespace jemdev\dbrm\abstr;
-use jemdev\dbrm\Exception;
+use jemdev\dbrm\jemdevDbrmException;
 use jemdev\dbrm\cache\cache;
 use Hoa\Registry\Registry;
 /**
@@ -161,7 +161,7 @@ abstract class execute
                     'Trace : '. $p->getTraceAsString()
                 );
             }
-            catch (Exception $e)
+            catch (jemdevDbrmException $e)
             {
                 $this->_bConnecte = false;
                 $this->_aDbErreurs[] = array(
@@ -397,7 +397,7 @@ abstract class execute
                 'Trace : '.$p->getTraceAsString()
             );
         }
-        catch (Exception $e)
+        catch (jemdevDbrmException $e)
         {
             $this->_aDbErreurs[] = array(
                 "L'ouverture de la transaction a échoué",
@@ -435,7 +435,7 @@ abstract class execute
                 'Trace : '.$p->getTraceAsString()
             );
         }
-        catch (Exception $e)
+        catch (jemdevDbrmException $e)
         {
             $annulation = false;
             $this->_aDbErreurs[] = array(
@@ -479,7 +479,7 @@ abstract class execute
                 'Trace : '.$p->getTraceAsString()
             );
         }
-        catch (Exception $e)
+        catch (jemdevDbrmException $e)
         {
             $this->_annuleTransaction();
             $this->_aDbErreurs[] = array(
