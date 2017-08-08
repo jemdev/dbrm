@@ -506,7 +506,7 @@ CODE_PHP;
                 for($ifk = 0; $ifk < $nfk; $ifk++):
                     $eoa = ($ifk < ($nfk -1)) ? ',' : null;
                     $sFichier .= <<<CODE_PHP
-                        '{$aFks[$ifk]['column_name']}' => array('{$aFks[$ifk]['referenced_table_name']}' => '{$aFks[$ifk]['referenced_column_name']}'){$eoa}
+                        '{$aFks[$ifk]['COLUMN_NAME']}' => array('{$aFks[$ifk]['REFERENCED_TABLE_NAME']}' => '{$aFks[$ifk]['REFERENCED_COLUMN_NAME']}'){$eoa}
 
 CODE_PHP;
                 endfor;
@@ -736,7 +736,7 @@ CODE_PHP;
     {
         for($i = 0; $i < $nt; $i++)
         {
-            $table = $aTables[$i]['table_name'];
+            $table = $aTables[$i]['TABLE_NAME'];
             if($section != 'vues')
             {
                 $aConf[$section][$table] = array(
@@ -761,23 +761,23 @@ CODE_PHP;
                 $aConf = $this->_addInfosColonnes($aConf, $table, $section, $aColonnes[$c]);
                 if($section != 'vues')
                 {
-                    if($aColonnes[$c]['column_key'] == 'PRI' || $aColonnes[$c]['column_key'] == 'PRIMARY KEY')
+                    if($aColonnes[$c]['COLUMN_KEY'] == 'PRI' || $aColonnes[$c]['COLUMN_KEY'] == 'PRIMARY KEY')
                     {
-                        $aPk[] = $aColonnes[$c]['column_name'];
+                        $aPk[] = $aColonnes[$c]['COLUMN_NAME'];
                     }
-                    if($aColonnes[$c]['column_key'] == 'UNI' || $aColonnes[$c]['column_key'] == 'UNIQUE')
+                    if($aColonnes[$c]['COLUMN_KEY'] == 'UNI' || $aColonnes[$c]['COLUMN_KEY'] == 'UNIQUE')
                     {
-                        $aUk[] = $aColonnes[$c]['column_name'];
+                        $aUk[] = $aColonnes[$c]['COLUMN_NAME'];
                     }
-                    if(($aColonnes[$c]['column_key'] == 'MUL' || $aColonnes[$c]['column_key'] == 'FOREIGN KEY' ) || $section == 'relations')
+                    if(($aColonnes[$c]['COLUMN_KEY'] == 'MUL' || $aColonnes[$c]['COLUMN_KEY'] == 'FOREIGN KEY' ) || $section == 'relations')
                     {
                         foreach($aConstraints as $constraint)
                         {
-                            if($table == $constraint['table_name'] && $aColonnes[$c]['column_name'] == $constraint['column_name'] && !empty($constraint['referenced_column_name']))
+                            if($table == $constraint['TABLE_NAME'] && $aColonnes[$c]['COLUMN_NAME'] == $constraint['COLUMN_NAME'] && !empty($constraint['REFERENCED_COLUMN_NAME']))
                             {
                                 $aFk[] = array(
-                                    $constraint['column_name'] => array(
-                                        $constraint['referenced_table_name'] => $constraint['referenced_column_name']
+                                    $constraint['COLUMN_NAME'] => array(
+                                        $constraint['REFERENCED_TABLE_NAME'] => $constraint['REFERENCED_COLUMN_NAME']
                                     )
                                 );
 
@@ -804,13 +804,13 @@ CODE_PHP;
 
     private function _addInfosColonnes($aConf, $table, $section = 'tables', $aInfosColonne)
     {
-        $col = $aInfosColonne['column_name'];
-        $sType = ($aInfosColonne['data_type'] == 'int')
+        $col = $aInfosColonne['COLUMN_NAME'];
+        $sType = ($aInfosColonne['DATA_TYPE'] == 'int')
             ? 'TYPE_INTEGER'
-            : 'TYPE_'. strtoupper($aInfosColonne['data_type']);
-        if(!array_key_exists($sType, $this->_aTypesDonnees) && $aInfosColonne['data_type'] != 'int')
+            : 'TYPE_'. strtoupper($aInfosColonne['DATA_TYPE']);
+        if(!array_key_exists($sType, $this->_aTypesDonnees) && $aInfosColonne['DATA_TYPE'] != 'int')
         {
-            $this->_aTypesDonnees[$sType] = $aInfosColonne['data_type'];
+            $this->_aTypesDonnees[$sType] = $aInfosColonne['DATA_TYPE'];
         }
         $sPrec = (
             $sType == 'TYPE_INTEGER' ||
@@ -819,26 +819,26 @@ CODE_PHP;
             $sType == 'TYPE_MEDIUMINT' ||
             $sType == 'TYPE_BIGINT'
         )
-            ? $aInfosColonne['numeric_precision']
+            ? $aInfosColonne['NUMERIC_PRECISION']
             : (($sType == 'TYPE_VARCHAR' || $sType == 'TYPE_CHAR')
-                ? $aInfosColonne['character_maximum_length']
+                ? $aInfosColonne['CHARACTER_MAXIMUM_LENGTH']
                 : (($sType == 'TYPE_DECIMAL' || $sType == 'TYPE_FLOAT')
-                    ? $aInfosColonne['numeric_precision'] .".". $aInfosColonne['numeric_scale']
+                    ? $aInfosColonne['NUMERIC_PRECISION'] .".". $aInfosColonne['NUMERIC_SCALE']
                     : 'null'
         ));
-        $sNull = ($aInfosColonne['is_nullable'] == 'YES') ? 'true' : 'false';
+        $sNull = ($aInfosColonne['IS_NULLABLE'] == 'YES') ? 'true' : 'false';
         $aAttr = array();
-        if(!is_null($aInfosColonne['extra']) && $aInfosColonne['extra'] != 'NULL' && !empty($aInfosColonne['extra']))
+        if(!is_null($aInfosColonne['EXTRA']) && $aInfosColonne['EXTRA'] != 'NULL' && !empty($aInfosColonne['EXTRA']))
         {
-            $aAttr['extra'] = $aInfosColonne['extra'];
+            $aAttr['extra'] = $aInfosColonne['EXTRA'];
         }
-        if(!is_null($aInfosColonne['column_default']))
+        if(!is_null($aInfosColonne['COLUMN_DEFAULT']))
         {
-            $aAttr['default'] = trim($aInfosColonne['column_default'], "'");
+            $aAttr['default'] = trim($aInfosColonne['COLUMN_DEFAULT'], "'");
         }
         if($sType == 'TYPE_ENUM')
         {
-            $detailsEnum = $aInfosColonne['column_type'];
+            $detailsEnum = $aInfosColonne['COLUMN_TYPE'];
             $masque_enum = "#^enum\(([^\)]+)\)#i";
             $sVals = preg_replace($masque_enum, "array($1)", $detailsEnum);
             $aAttr['vals'] = $sVals;
