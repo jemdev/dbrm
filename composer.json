@@ -4,7 +4,7 @@
     "type"       : "library",
     "keywords"   : ["library", "database", "data", "mapping", "validation", "namespace"],
     "homepage"   : "http://jem-web.info/",
-    "license"    : "CeCILL-3.0",
+    "license"    : "CECILL-3.0",
     "authors"    : [
         {
             "name" : "Jean Molliné",
