@@ -549,6 +549,10 @@ class ligneInstance extends execute
             {
                 foreach ($this->_aCles as $cle)
                 {
+                    if($this->_aConfigTable['fields'][$cle]['type'] == 'DECIMAL')
+                    {
+                        $this->{$cle} = 0.00;
+                    }
                     $this->{$cle} = $pre_data[$cle];
                 }
                 $etatLock = true;
