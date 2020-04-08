@@ -150,7 +150,7 @@ class vue extends execute
     public function fetchOne()
     {
         $aInfos = $this->_getDatas('one');
-        $retour = (count($aInfos) > 0) ? $aInfos : null;
+        $retour = ((!empty($aInfos)) || (is_array($aInfos) && count($aInfos) > 0)) ? $aInfos : null;
         return $retour;
     }
 
