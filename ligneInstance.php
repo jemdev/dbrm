@@ -406,7 +406,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,63) && $valeur < pow(2,63)))
                                 )
                                 {
-                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,63) .", maximum ". pow(2,63)-1 .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,63) .", maximum ". (pow(2,63)-1) .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -415,7 +415,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,31) && $valeur < pow(2,31)))
                                 )
                                 {
-                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,31) .", maximum ". pow(2,31)-1 .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,31) .", maximum ". (pow(2,31)-1) .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -424,7 +424,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,23) && $valeur < pow(2,23)))
                                 )
                                 {
-                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,23) .", maximum ". pow(2,23)-1 .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,23) .", maximum ". (pow(2,23)-1) .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -433,7 +433,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,15) && $valeur < pow(2,15)))
                                 )
                                 {
-                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,15) .", maximum ". pow(2,15)-1 .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,15) .", maximum ". (pow(2,15)-1) .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -442,7 +442,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,7) && $valeur < pow(2,7)))
                                 )
                                 {
-                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,7) .", maximum ". pow(2,7)-1 .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,7) .", maximum ". (pow(2,7)-1) .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
