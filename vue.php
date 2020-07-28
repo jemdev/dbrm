@@ -288,7 +288,7 @@ class vue extends execute
         {
             $t = false;
         }
-        if(false !== $t && isset($this->_aConfig[$t][$table]['fileds'][$colonne]) && $this->_aConfig[$t][$table]['fields'][$colonne]['type'] == TYPE_ENUM)
+        if(false !== $t && isset($this->_aConfig[$t][$table]['fields'][$colonne]) && $this->_aConfig[$t][$table]['fields'][$colonne]['type'] == TYPE_ENUM)
         {
             $retour = $this->_aConfig[$t][$table]['fields'][$colonne]['attr']['vals'];
         }
