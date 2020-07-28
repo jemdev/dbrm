@@ -263,6 +263,38 @@ class vue extends execute
         return $oInstanceLigne;
     }
 
+    /**
+     * Récupération de la liste des valeurs possible d'une colonne de type ENUM
+     * 
+     * Retourne un tableau de valeurs ou bien false si la table n'est pas trouvée, ou si
+     * la colonne n'existe pas ou encore si le type de colonne ne correspond pas.
+     *
+     * @param   string  $table      Nom de la table;
+     * @param   string  $colonne    Nom de la colonne à vérifier;
+     * @return array
+     */
+    public function getValeursChampsEnum($table, $colonne)
+    {
+        $retour = false;
+        if(isset($this->_aDbConfiguration['tables'][$table]))
+        {
+            $t = 'tables';
+        }
+        elseif(isset($this->_aDbConfiguration['relations'][$table]))
+        {
+            $t = 'relations';
+        }
+        else
+        {
+            $t = false;
+        }
+        if(false !== $t && isset($this->_aDbConfiguration[$t][$table]['fileds'][$colonne]) && $this->_aDbConfiguration[$t][$table]['fields'][$colonne]['type'] == TYPE_ENUM)
+        {
+            $retour = $this->_aDbConfiguration[$t][$table]['fields'][$colonne]['attr']['vals'];
+        }
+        return $retour;
+    }
+
     public function __destruct()
     {
         // unset($this);
