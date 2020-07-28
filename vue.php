@@ -276,11 +276,11 @@ class vue extends execute
     public function getValeursChampsEnum($table, $colonne)
     {
         $retour = false;
-        if(isset($this->_aDbConfiguration['tables'][$table]))
+        if(isset($this->_aConfig['tables'][$table]))
         {
             $t = 'tables';
         }
-        elseif(isset($this->_aDbConfiguration['relations'][$table]))
+        elseif(isset($this->_aConfig['relations'][$table]))
         {
             $t = 'relations';
         }
@@ -288,9 +288,9 @@ class vue extends execute
         {
             $t = false;
         }
-        if(false !== $t && isset($this->_aDbConfiguration[$t][$table]['fileds'][$colonne]) && $this->_aDbConfiguration[$t][$table]['fields'][$colonne]['type'] == TYPE_ENUM)
+        if(false !== $t && isset($this->_aConfig[$t][$table]['fileds'][$colonne]) && $this->_aConfig[$t][$table]['fields'][$colonne]['type'] == TYPE_ENUM)
         {
-            $retour = $this->_aDbConfiguration[$t][$table]['fields'][$colonne]['attr']['vals'];
+            $retour = $this->_aConfig[$t][$table]['fields'][$colonne]['attr']['vals'];
         }
         return $retour;
     }
