@@ -1,7 +1,7 @@
 # jemdev\dbrm : DataBase Relational Mapping
-- Auteur : Jean Molliné
+- Auteur : Jean MollinÃ©
 - Licence : [CeCILL V2][]
-- Pré-requis :
+- PrÃ©-requis :
   - PHP >= 5.4
 - Utilise : [Hoa\Registry][]
 - Contact : [Message][]
@@ -19,36 +19,36 @@ Avec Composer, ajouter ce qui suit dans la partie require de votre composer.json
 ```
 
 -----------------------------------
-# Présentation et principe de fonctionnement.
-Ce package permet un accès aux données d'une base de données relationnelle.
-L'idée fondatrice part du principe qu'on peut faire des lectures sur des tables multiples mais que l'écriture ne peut se faire que sur une seule table à la fois.
-Par conséquent, il devenait envisageable de créer des objets dynamiques pour chacune des tables sur lesquelles on souhaitait effectuer des opérations en écriture.
+# PrÃ©sentation et principe de fonctionnement.
+Ce package permet un accÃ¨s aux donnÃ©es d'une base de donnÃ©es relationnelle.
+L'idÃ©e fondatrice part du principe qu'on peut faire des lectures sur des tables multiples mais que l'Ã©criture ne peut se faire que sur une seule table Ã  la fois.
+Par consÃ©quent, il devenait envisageable de crÃ©er des objets dynamiques pour chacune des tables sur lesquelles on souhaitait effectuer des opÃ©rations en Ã©criture.
 
-Des méthodes relativement simples permettent d'exécuter des requêtes préparées pour la collecte de données. Pour l'écriture, d'autres méthodes permettent de créer une instance pour initialiser une ligne d'une table donnée et d'affecter les valeurs souhaitées aux différentes colonnes de la table pour cette ligne.
-Selon que l'identifiant de la ligne est fourni ou non, l'écriture sera une création ou une modification, voire une suppression.
+Des mÃ©thodes relativement simples permettent d'exÃ©cuter des requÃªtes prÃ©parÃ©es pour la collecte de donnÃ©es. Pour l'Ã©criture, d'autres mÃ©thodes permettent de crÃ©er une instance pour initialiser une ligne d'une table donnÃ©e et d'affecter les valeurs souhaitÃ©es aux diffÃ©rentes colonnes de la table pour cette ligne.
+Selon que l'identifiant de la ligne est fourni ou non, l'Ã©criture sera une crÃ©ation ou une modification, voire une suppression.
 
-Pour pouvoir créer ces instances dynamiques, un système permet d'établir une sorte de cartographie du schéma de données, détaillant la liste des tables, des tables relationnelles et des vues qui sont présentes. Sur la base de ces informations, une instance pour une table donnée définit les propriétés en lisant la liste des colonnes, leur types et d'autres informations pratiques.
+Pour pouvoir crÃ©er ces instances dynamiques, un systÃ¨me permet d'Ã©tablir une sorte de cartographie du schÃ©ma de donnÃ©es, dÃ©taillant la liste des tables, des tables relationnelles et des vues qui sont prÃ©sentes. Sur la base de ces informations, une instance pour une table donnÃ©e dÃ©finit les propriÃ©tÃ©s en lisant la liste des colonnes, leur types et d'autres informations pratiques.
 
-Lors de la connexion, si le fichier de configuration n'existe pas, il est automatiquement créé. Par la suite, si on modifie la structure du schéma, même si ce n'est que pour ajouter, modifier ou retirer une colonne dans une table, une méthode permet de régénérer ce fichier de configuration. Il m'est apparu comme très peu pratique de devoir créer une classe pour chacune des tables, ces modifications de structure induisant la ré-écriture partielle de certaines de ces classes à chaque fois. Ces classes sont donc gérées dynamiquement et sont, en réalité, des classes virtuelles.
-## Récupérer un objet de connexion
+Lors de la connexion, si le fichier de configuration n'existe pas, il est automatiquement crÃ©Ã©. Par la suite, si on modifie la structure du schÃ©ma, mÃªme si ce n'est que pour ajouter, modifier ou retirer une colonne dans une table, une mÃ©thode permet de rÃ©gÃ©nÃ©rer ce fichier de configuration. Il m'est apparu comme trÃ¨s peu pratique de devoir crÃ©er une classe pour chacune des tables, ces modifications de structure induisant la rÃ©-Ã©criture partielle de certaines de ces classes Ã  chaque fois. Ces classes sont donc gÃ©rÃ©es dynamiquement et sont, en rÃ©alitÃ©, des classes virtuelles.
+## RÃ©cupÃ©rer un objet de connexion
 ### Configurer la connexion
-Il est impératif de créer un fichier contenant les paramètres de connexion au SGBDR. Ce fichier doit être nommé *dbCnxConf.php* et être formaté de la manière suivante :
+Il est impÃ©ratif de crÃ©er un fichier contenant les paramÃ¨tres de connexion au SGBDR. Ce fichier doit Ãªtre nommÃ© *dbCnxConf.php* et Ãªtre formatÃ© de la maniÃ¨re suivante :
 
 ```php
 <?php
 /**
- * Fichier de configuration des paramètres de connexion à la base de données.
- * Ce fichier est généré automatiquement lors de la phase initiale d'installation.
+ * Fichier de configuration des paramÃ¨tres de connexion Ã  la base de donnÃ©es.
+ * Ce fichier est gÃ©nÃ©rÃ© automatiquement lors de la phase initiale d'installation.
  */
-$db_app_server  = 'localhost';          // Adresse du serveur de base de données
-$db_app_schema  = 'testjem';            // Schéma à cartographier (base de données de l'application)
+$db_app_server  = 'localhost';          // Adresse du serveur de base de donnÃ©es
+$db_app_schema  = 'testjem';            // SchÃ©ma Ã  cartographier (base de donnÃ©es de l'application)
 $db_app_user    = 'testjem';            // Utilisateur de l'application pouvant se connecter au SGBDR
 $db_app_mdp     = 'testjem';            // Mot-de-passe de l'utilisateur de l'application
 $db_app_type    = 'pgsql';              // Type de SGBDR, MySQL, PostGreSQL, Oracle, etc..
 $db_app_port    = '5432';               // Port sur lequel on peut se connecter au serveur
-$db_meta_schema = 'INFORMATION_SCHEMA'; // Schéma où pourront être collectées les informations sur le schéma de travail
+$db_meta_schema = 'INFORMATION_SCHEMA'; // SchÃ©ma oÃ¹ pourront Ãªtre collectÃ©es les informations sur le schÃ©ma de travail
 /**
- * Création des constantes globales de l'application
+ * CrÃ©ation des constantes globales de l'application
  * NE PAS MODIFIER LES LIGNES SUIVANTES
  */
 defined("DB_ROOT_SERVER")       || define("DB_ROOT_SERVER",         $db_app_server);
@@ -63,110 +63,110 @@ defined("DB_APP_USER")          || define("DB_APP_USER",            $db_app_user
 defined("DB_APP_PASSWORD")      || define("DB_APP_PASSWORD",        $db_app_mdp);
 ```
 
-#### Les types de SGBDR supportés
-À ce jour, ce n'est utilisable qu'avec MySQL et PostGreSQL. Je n'ai pas testé avec les forks de MySQL autres que MariaDb (percona et autres) mais dans la mesure où ils sont compatibles, ça ne devrait pas présenter de blocage.
-La valeur à utiliser pour la variable *$db_app_type* :
+#### Les types de SGBDR supportÃ©s
+Ã€ ce jour, ce n'est utilisable qu'avec MySQL et PostGreSQL. Je n'ai pas testÃ© avec les forks de MySQL autres que MariaDb (percona et autres) mais dans la mesure oÃ¹ ils sont compatibles, Ã§a ne devrait pas prÃ©senter de blocage.
+La valeur Ã  utiliser pour la variable *$db_app_type* :
 
 - MySQL : *mysql* (fonctionne avec ce type pour MariaDB)
 - PostGreSQL : *pgsql*
 
-Ce fichier devra être placé dans le répertoire où sont situés vos éventuels autres fichiers de configuration selon l'architecture de votre application.
-Il conviendra par la suite de pouvoir fournir en temps voulu le chemin absolu vers ce fichier. Dès le départ, s'il n'existe pas, un autre fichier de configuration sera généré automatiquement et sera indispensable au bon fonctionnement du package. Ce fichier sera généré en deux version, le premier nommé *dbConf.php* pourra être assez facilement lu par n'importe quel développeur, le second qui sera privilégié pour l'utilisation par l'application sera nommé *dbConf_compact.php* et correspondra strictement au même contenu mais compacté et ramené sur une seule ligne.
-Ce fichier décrit en détail l'ensemble de la structure de données, tables, tables relationnelles et vues, colonnes, clés et autres informations détaillées. Il sera utilisé par les objets destinés à toutes les opérations en écriture, insertion, mises à jour ou suppression.
+Ce fichier devra Ãªtre placÃ© dans le rÃ©pertoire oÃ¹ sont situÃ©s vos Ã©ventuels autres fichiers de configuration selon l'architecture de votre application.
+Il conviendra par la suite de pouvoir fournir en temps voulu le chemin absolu vers ce fichier. DÃ¨s le dÃ©part, s'il n'existe pas, un autre fichier de configuration sera gÃ©nÃ©rÃ© automatiquement et sera indispensable au bon fonctionnement du package. Ce fichier sera gÃ©nÃ©rÃ© en deux version, le premier nommÃ© *dbConf.php* pourra Ãªtre assez facilement lu par n'importe quel dÃ©veloppeur, le second qui sera privilÃ©giÃ© pour l'utilisation par l'application sera nommÃ© *dbConf_compact.php* et correspondra strictement au mÃªme contenu mais compactÃ© et ramenÃ© sur une seule ligne.
+Ce fichier dÃ©crit en dÃ©tail l'ensemble de la structure de donnÃ©es, tables, tables relationnelles et vues, colonnes, clÃ©s et autres informations dÃ©taillÃ©es. Il sera utilisÃ© par les objets destinÃ©s Ã  toutes les opÃ©rations en Ã©criture, insertion, mises Ã  jour ou suppression.
 
-### Méthodes globales accessibles
-Deux méthodes de base seront indispensables :
+### MÃ©thodes globales accessibles
+Deux mÃ©thodes de base seront indispensables :
 
 - setRequete($sql, $aParams = array(), $cache = true)
-Définit la requête à exécuter, en option on peut indiquer des paramètres dans un tableau associatif où chaque index est le nom de la colonne visée associé à sa valeur qui doit y être affectée, et un troisième paramètre permet de désactiver la mise en cache du résultat si ce cache est globalement activé par défaut;
+DÃ©finit la requÃªte Ã  exÃ©cuter, en option on peut indiquer des paramÃ¨tres dans un tableau associatif oÃ¹ chaque index est le nom de la colonne visÃ©e associÃ© Ã  sa valeur qui doit y Ãªtre affectÃ©e, et un troisiÃ¨me paramÃ¨tre permet de dÃ©sactiver la mise en cache du rÃ©sultat si ce cache est globalement activÃ© par dÃ©faut;
 - execute()
-Cette méthode permet d'exécuter directement une méthode définie avec setRequete(). On peut alors envoyer une requête, un appel de procédure stockée ou une fonction utilisateur voire même une requête en écriture bien que cette dernière option ne soit pas recommandée (Voir plus loin l'écriture de données)
+Cette mÃ©thode permet d'exÃ©cuter directement une mÃ©thode dÃ©finie avec setRequete(). On peut alors envoyer une requÃªte, un appel de procÃ©dure stockÃ©e ou une fonction utilisateur voire mÃªme une requÃªte en Ã©criture bien que cette derniÃ¨re option ne soit pas recommandÃ©e (Voir plus loin l'Ã©criture de donnÃ©es)
 
 
-Deux autres méthodes nous intéressent principalement ici et ne seront utilisées que lorsqu'on devra enregistrer des création ou modifications de données :
+Deux autres mÃ©thodes nous intÃ©ressent principalement ici et ne seront utilisÃ©es que lorsqu'on devra enregistrer des crÃ©ation ou modifications de donnÃ©es :
 
 - startTransaction()
-Démarre une transaction si les tables utilisent un moteur transactionnel. Toutes les requêtes suivantes seront alors incluses dans une transaction jusqu'à ce qu'on appelle la méthode finishTransaction();
+DÃ©marre une transaction si les tables utilisent un moteur transactionnel. Toutes les requÃªtes suivantes seront alors incluses dans une transaction jusqu'Ã  ce qu'on appelle la mÃ©thode finishTransaction();
 - finishTransaction($bOk)
-Termine une transaction : le paramètre attendu est un booleen, TRUE exécutera un COMMIT, FALSE exécutera un ROLLBACK;
+Termine une transaction : le paramÃ¨tre attendu est un booleen, TRUE exÃ©cutera un COMMIT, FALSE exÃ©cutera un ROLLBACK;
 
-Une autre méthode pourra se révéler pratique lors de la phase de développement de votre application :
+Une autre mÃ©thode pourra se rÃ©vÃ©ler pratique lors de la phase de dÃ©veloppement de votre application :
 
 - getErreurs()
-Retourne la liste des erreurs rencontrées sous la forme d'un tableau
+Retourne la liste des erreurs rencontrÃ©es sous la forme d'un tableau
 
 
-# Lecture de données
-Il n'y a pas de générateur de requêtes, à tout le moins pour l'instant. On devra écrire soi-même les requêtes en lecture qui devront être exécutées pour la collecte de données.
+# Lecture de donnÃ©es
+Il n'y a pas de gÃ©nÃ©rateur de requÃªtes, Ã  tout le moins pour l'instant. On devra Ã©crire soi-mÃªme les requÃªtes en lecture qui devront Ãªtre exÃ©cutÃ©es pour la collecte de donnÃ©es.
 
-Chaque requête peut être paramétrée, sera exécutée avec PDO et retournera une donnée unique, une ligne de données ou bien un tableau de données voire même un objet.
-On s'appuiera sur une instance de la classe jemdev\dbrm\vue qu'on définira au préalable.
+Chaque requÃªte peut Ãªtre paramÃ©trÃ©e, sera exÃ©cutÃ©e avec PDO et retournera une donnÃ©e unique, une ligne de donnÃ©es ou bien un tableau de donnÃ©es voire mÃªme un objet.
+On s'appuiera sur une instance de la classe jemdev\dbrm\vue qu'on dÃ©finira au prÃ©alable.
 
-Exemple : par convention, l'instance de connexion sera la variable « $oVue » et aura été définie en amont (entendez le mot de « vue » au sens SQL du terme).
+Exemple : par convention, l'instance de connexion sera la variable Â« $oVue Â» et aura Ã©tÃ© dÃ©finie en amont (entendez le mot de Â« vue Â» au sens SQL du terme).
 
 ```php
 <?php
-/* Définition de la requête */
+/* DÃ©finition de la requÃªte */
 $sql = "SELECT utl_id, utl_nom, utl_prenom, utl_dateinscription ".
        "FROM t_utilisateur_utl ".
        "WHERE utl_dateinscription > :p_utl_dateinscription ".
        "ORDER BY utl_nom, utl_prenom";
-/* Initialisation de paramètre(s) */
+/* Initialisation de paramÃ¨tre(s) */
 $params = array(':p_utl_dateinscription' => '2015-10-15');
-/* Initialisation de la requête */
+/* Initialisation de la requÃªte */
 $oVue->setRequete($sql, $params);
-/* Récupération des données */
+/* RÃ©cupÃ©ration des donnÃ©es */
 $infosUtilisateur = $oVue->fetchAssoc();
 ```
 
 #### Note:
-Le nom de l'objet $oVue dans cet exemple n'est pas anodin, il faut entendre le mot *vue* au sens SQL du terme. Une vue dans une base de données est une synthèse d'une requête d'interrogation de la base. On peut la voir comme une table virtuelle, définie par une requête.
-## Les méthodes accessibles
-Le nom des méthodes est inspiré de celles qu'on emploie avec l'extension MySQL. Le retours sont bien entendu similaires dans leur forme.
+Le nom de l'objet $oVue dans cet exemple n'est pas anodin, il faut entendre le mot *vue* au sens SQL du terme. Une vue dans une base de donnÃ©es est une synthÃ¨se d'une requÃªte d'interrogation de la base. On peut la voir comme une table virtuelle, dÃ©finie par une requÃªte.
+## Les mÃ©thodes accessibles
+Le nom des mÃ©thodes est inspirÃ© de celles qu'on emploie avec l'extension MySQL. Le retours sont bien entendu similaires dans leur forme.
 
 - fetchAssoc()
-Retourne un tableau associatif de résultats où les index sont les noms des colonnes ou alias déterminés dans la requête;
+Retourne un tableau associatif de rÃ©sultats oÃ¹ les index sont les noms des colonnes ou alias dÃ©terminÃ©s dans la requÃªte;
 - fetchArray()
-Retourne un tableau où chaque colonne est présentée avec deux index, l'un numérique, l'autre associatif avec le nom de la colonne;
+Retourne un tableau oÃ¹ chaque colonne est prÃ©sentÃ©e avec deux index, l'un numÃ©rique, l'autre associatif avec le nom de la colonne;
 - fetchObject()
-Retourne un objet où chaque colonne est une propriété;
+Retourne un objet oÃ¹ chaque colonne est une propriÃ©tÃ©;
 - fetchLine($out = 'array')
-Retourne une seule ligne de données. On peut préciser en paramètre quelle forme doit prendre le résultat en passant une des constantes suivantes :
+Retourne une seule ligne de donnÃ©es. On peut prÃ©ciser en paramÃ¨tre quelle forme doit prendre le rÃ©sultat en passant une des constantes suivantes :
     - vue::JEMDB\_FETCH\_OBJECT  = 'object' : indiquera un retour sous forme d'un objet;
-    - vue::JEMDB\_FETCH\_ARRAY   = 'array' : indiquera un retour sous forme d'un tableau avec double index numérique et associatif;
+    - vue::JEMDB\_FETCH\_ARRAY   = 'array' : indiquera un retour sous forme d'un tableau avec double index numÃ©rique et associatif;
     - vue::JEMDB\_FETCH\_ASSOC   = 'assoc' : indiquera un retour sous forme d'un tableau associatif;
-    - vue::JEMDB\_FETCH\_NUM     = 'num' : indiquera un retour sous forme d'un tableau indexé numériquement;
+    - vue::JEMDB\_FETCH\_NUM     = 'num' : indiquera un retour sous forme d'un tableau indexÃ© numÃ©riquement;
 - fetchOne()
-Retourne une donnée unique;
+Retourne une donnÃ©e unique;
 
-# Écriture de données
-### Les méthodes accessibles
-Sur une instance donnée, vous disposez des méthodes suivantes :
+# Ã‰criture de donnÃ©es
+### Les mÃ©thodes accessibles
+Sur une instance donnÃ©e, vous disposez des mÃ©thodes suivantes :
 
-- init($aPk = null) : Initialise l'instance de la ligne. En arrière plan, l'objet sera construit dynamiquement avec comme propriétés les colonnes de la table visée;
-- sauvegarder() : Enregistre les modifications apportées aux propriétés par une requête INSERT ou UPDATE selon qu'on a déterminé ou non la clé primaire;
-- supprimer() : Supprime la ligne de la table par une requête DELETE. Dans le cas où un moteur transactionnel serait utilisé et que des clauses d'intégrité référentielles auraient été définies (CONSTRAINT), la méthode pourra retourner une erreur si des données faisant références à la ligne devant être supprimée existent encore dans les tables liées;
-- startTransaction() : Démarre une transaction SQL;
-- finishTransaction($bOk) : Termine une transaction SQL, le paramètre attendu est un booléen indiquant si on doit effectuer un COMMIT ou un ROLLBACK;
+- init($aPk = null) : Initialise l'instance de la ligne. En arriÃ¨re plan, l'objet sera construit dynamiquement avec comme propriÃ©tÃ©s les colonnes de la table visÃ©e;
+- sauvegarder() : Enregistre les modifications apportÃ©es aux propriÃ©tÃ©s par une requÃªte INSERT ou UPDATE selon qu'on a dÃ©terminÃ© ou non la clÃ© primaire;
+- supprimer() : Supprime la ligne de la table par une requÃªte DELETE. Dans le cas oÃ¹ un moteur transactionnel serait utilisÃ© et que des clauses d'intÃ©gritÃ© rÃ©fÃ©rentielles auraient Ã©tÃ© dÃ©finies (CONSTRAINT), la mÃ©thode pourra retourner une erreur si des donnÃ©es faisant rÃ©fÃ©rences Ã  la ligne devant Ãªtre supprimÃ©e existent encore dans les tables liÃ©es;
+- startTransaction() : DÃ©marre une transaction SQL;
+- finishTransaction($bOk) : Termine une transaction SQL, le paramÃ¨tre attendu est un boolÃ©en indiquant si on doit effectuer un COMMIT ou un ROLLBACK;
 
 ## Mise en pratique
-On écrit des données, comme mentionné en introduction, que sur une seule table à la fois. Pour ce faire, on crée un objet représentant une ligne de ladite table.
-Voici d'abord un exemple schématique :
+On Ã©crit des donnÃ©es, comme mentionnÃ© en introduction, que sur une seule table Ã  la fois. Pour ce faire, on crÃ©e un objet reprÃ©sentant une ligne de ladite table.
+Voici d'abord un exemple schÃ©matique :
 
 ```php
 <?php
-/* On crée l'instance de la ligne à partir du nom de la table cible */
+/* On crÃ©e l'instance de la ligne Ã  partir du nom de la table cible */
 $oInterlocuteur = $oDbrm->getLigneInstance('t_interlocuteur_int');
 /*
- * On détermine si on dispose ou non de la clé primaire de la ligne
- * et on stocke ça dans un tableau associatif
+ * On dÃ©termine si on dispose ou non de la clÃ© primaire de la ligne
+ * et on stocke Ã§a dans un tableau associatif
  */
 $aPk = (!empty($int_id)) ? array('int_id' => $int_id) : null;
 /* On initialise l'instance */
 $oInterlocuteur->init($aPk);
 /*
- * Dès cet instant, notre objet présente chaque colonne de la
- * table t_interlocuteur_int comme des propriétés qu'on peut modifier
+ * DÃ¨s cet instant, notre objet prÃ©sente chaque colonne de la
+ * table t_interlocuteur_int comme des propriÃ©tÃ©s qu'on peut modifier
  */
 $oInterlocuteur->int_nom    = $int_nom;
 $oInterlocuteur->int_prenom = $int_prenom;
@@ -177,19 +177,19 @@ if(!is_null($int_dateinscription))
 /* On peut maintenant sauvegarder ces informations */
 $enreg = $oInterlocuteur->sauvegarder();
 /*
- * Terminé, les écritures pour cette ligne sont terminées.
- * On peut récupérer la valeur de la clé primaire si nécessaire et s'il
- * s'agissait d'une création. Cette clé primaire est automatiquement gérée
- * et initialisée dans l'instance.
- * S'il y a eu une erreur, la méthode sauvegarder retournera l'erreur, sinon
+ * TerminÃ©, les Ã©critures pour cette ligne sont terminÃ©es.
+ * On peut rÃ©cupÃ©rer la valeur de la clÃ© primaire si nÃ©cessaire et s'il
+ * s'agissait d'une crÃ©ation. Cette clÃ© primaire est automatiquement gÃ©rÃ©e
+ * et initialisÃ©e dans l'instance.
+ * S'il y a eu une erreur, la mÃ©thode sauvegarder retournera l'erreur, sinon
  * elle retournera TRUE
  */
 if(true == $enreg)
 {
     $int_id = $oInterlocuteur->int_id;
     /*
-     * Ici, si par exemple vous avez d'autres données à enregistrer, données qui
-     * dépendent la la réussite de ce premier enregistrement, vous continuez
+     * Ici, si par exemple vous avez d'autres donnÃ©es Ã  enregistrer, donnÃ©es qui
+     * dÃ©pendent la la rÃ©ussite de ce premier enregistrement, vous continuez
      * sur l'enregistrement suivant, exemple :
      */
     $oAdresse = $oDbrm->getLigneInstance('t_adresse_adr');
@@ -203,69 +203,69 @@ if(true == $enreg)
 }
 else
 {
-    // Ici, le code permettant la gestion de l'erreur selon vos propres manières de faire.
+    // Ici, le code permettant la gestion de l'erreur selon vos propres maniÃ¨res de faire.
 }
 ```
 
-Une utilisation pratique vous amènera sans doute à répartir les requêtes en écriture sur différentes tables dans différentes fonctions/méthodes appelées à partir d'un endroit unique, ce qui vous permettra d'utiliser au besoin le mode transactionnel. En démarrant la transaction au départ, vous exécutez chaque enregistrement, et si une des méthodes retourne FALSE à cause d'une erreur, vous pourrez interrompre la succession des enregistrements et terminer la transaction par un ROLLBACK, évitant ainsi de pourrir vos tables avec des données orphelines ou incohérentes.
+Une utilisation pratique vous amÃ¨nera sans doute Ã  rÃ©partir les requÃªtes en Ã©criture sur diffÃ©rentes tables dans diffÃ©rentes fonctions/mÃ©thodes appelÃ©es Ã  partir d'un endroit unique, ce qui vous permettra d'utiliser au besoin le mode transactionnel. En dÃ©marrant la transaction au dÃ©part, vous exÃ©cutez chaque enregistrement, et si une des mÃ©thodes retourne FALSE Ã  cause d'une erreur, vous pourrez interrompre la succession des enregistrements et terminer la transaction par un ROLLBACK, Ã©vitant ainsi de pourrir vos tables avec des donnÃ©es orphelines ou incohÃ©rentes.
 
 ### Ce qu'on ne peut pas faire (pour l'instant)
 
-Actuellement, il reste quelques éléments en _TODO-LIST_ et en particulier, lors de l'écriture de données, la possibilité d'affecter non pas une valeur mais un appel de fonction SQL. Supposons par exemple que vous vouliez utiliser une fonction de chiffrement intégrée de MySQL pour affecter une valeur. Il n'est pour l'instant pas possible de faire ceci :
+Actuellement, il reste quelques Ã©lÃ©ments en _TODO-LIST_ et en particulier, lors de l'Ã©criture de donnÃ©es, la possibilitÃ© d'affecter non pas une valeur mais un appel de fonction SQL. Supposons par exemple que vous vouliez utiliser une fonction de chiffrement intÃ©grÃ©e de MySQL pour affecter une valeur. Il n'est pour l'instant pas possible de faire ceci :
 
 ```ruby
-$instanceLigne->nom_colonne = "AES_ENCRYPT('valeur', 'Clé de chiffrement')";
+$instanceLigne->nom_colonne = "AES_ENCRYPT('valeur', 'ClÃ© de chiffrement')";
 ```
 
-#### Comment contourner le problème.
-Pour une utilisation quotidienne, ce n'est pas un réel problème, ce type de cas particulier étant relativement rare. Si cependant vous devez pouvoir effectuer une telle opération, vous avez deux options.
+#### Comment contourner le problÃ¨me.
+Pour une utilisation quotidienne, ce n'est pas un rÃ©el problÃ¨me, ce type de cas particulier Ã©tant relativement rare. Si cependant vous devez pouvoir effectuer une telle opÃ©ration, vous avez deux options.
 
-- La première consiste à envoyer une valeur en clair et ajouter un trigger sur la table avec un BEFORE INSERT qui exécutera alors la fonction SQL à appliquer sur la valeur pour l'affecter à la colonne;
-- La seconde consiste à écrire vous-même la requête en écriture INSERT ou UPDATE et à la faire exécuter avec la méthode execute() de l amanière suivante :
+- La premiÃ¨re consiste Ã  envoyer une valeur en clair et ajouter un trigger sur la table avec un BEFORE INSERT qui exÃ©cutera alors la fonction SQL Ã  appliquer sur la valeur pour l'affecter Ã  la colonne;
+- La seconde consiste Ã  Ã©crire vous-mÃªme la requÃªte en Ã©criture INSERT ou UPDATE et Ã  la faire exÃ©cuter avec la mÃ©thode execute() de l amaniÃ¨re suivante :
 
 ```php
 <?php
 /* On a d'abord besoin d'une instance de jemdev\dbrm\vue */
 $oVue = $oDb->getDbrmInstance();
-/* On définit la requête SQL d'insertion */
+/* On dÃ©finit la requÃªte SQL d'insertion */
 $sql  = "INSERT INTO matable (col_login, col_motdepasse)".  
-        "VALUES('Toto', AES_ENCRYPT('valeur', 'Clé de chiffrement'))";  
+        "VALUES('Toto', AES_ENCRYPT('valeur', 'ClÃ© de chiffrement'))";  
 $oVue->setRequete($sql);  
-/* Exécution de la requête. */
+/* ExÃ©cution de la requÃªte. */
 $enreg = $oVue->execute();
 ```
 
 La suite du code ne change pas.
 
-Il n'a pas été prévu pour l'instant de pouvoir effectuer une mise à jour ou encore une suppression de lignes multiples dans la mesure où une mise à jour s'effectuera uniquement en fonction de la valeur d'une clé primaire. Pratiquant l'utilisation au quotidien de ce package depuis déjà de nombreuses années et ce sur une application de gestion, je n'ai en réalité jamais eu besoin d'implémenter cette possibilité. Et pour les rares fois où ça doit se produire, je peux contourner ce manque en collectant la liste des clé primaires à prendre en compte dans une mise à jour et chaque ligne sera traitée individuellement dans une boucle.
+Il n'a pas Ã©tÃ© prÃ©vu pour l'instant de pouvoir effectuer une mise Ã  jour ou encore une suppression de lignes multiples dans la mesure oÃ¹ une mise Ã  jour s'effectuera uniquement en fonction de la valeur d'une clÃ© primaire. Pratiquant l'utilisation au quotidien de ce package depuis dÃ©jÃ  de nombreuses annÃ©es et ce sur une application de gestion, je n'ai en rÃ©alitÃ© jamais eu besoin d'implÃ©menter cette possibilitÃ©. Et pour les rares fois oÃ¹ Ã§a doit se produire, je peux contourner ce manque en collectant la liste des clÃ© primaires Ã  prendre en compte dans une mise Ã  jour et chaque ligne sera traitÃ©e individuellement dans une boucle.
 
 -----------------------------------
-# Une gestion de cache dynamique (expérimental)
-Un problème d'accès à la configuration du serveur MySQL sur lequel je travaillais m'interdisait de paramétrer le cache intégré et même tout simplement de l'activer par défaut. Souhaitant pouvoir disposer d'un système de gestion de cache de requêtes, j'ai ajouté des classes permettant de gérer cet aspect.
+# Une gestion de cache dynamique (expÃ©rimental)
+Un problÃ¨me d'accÃ¨s Ã  la configuration du serveur MySQL sur lequel je travaillais m'interdisait de paramÃ©trer le cache intÃ©grÃ© et mÃªme tout simplement de l'activer par dÃ©faut. Souhaitant pouvoir disposer d'un systÃ¨me de gestion de cache de requÃªtes, j'ai ajoutÃ© des classes permettant de gÃ©rer cet aspect.
 
-Globalement, chaque requête en lecture peut, si le cache est activé, stocker le résultat en cache sur fichier voire même sur MemCache. Toute écriture sur une des table va régénérer le cache pour les requêtes où est impliquée la table en question. La durée de vie du cache est donc fonction de l'exécution de nouvelles écritures et non d'une durée de vie pré-définie. Si le résultat d'une requête est valide pendant trois minutes et qu'une écriture intervient, le cache est renouvelé, si ce même résultat est toujours valide après trois semaines, il est parfaitement inutile de le régénérer.
+Globalement, chaque requÃªte en lecture peut, si le cache est activÃ©, stocker le rÃ©sultat en cache sur fichier voire mÃªme sur MemCache. Toute Ã©criture sur une des table va rÃ©gÃ©nÃ©rer le cache pour les requÃªtes oÃ¹ est impliquÃ©e la table en question. La durÃ©e de vie du cache est donc fonction de l'exÃ©cution de nouvelles Ã©critures et non d'une durÃ©e de vie prÃ©-dÃ©finie. Si le rÃ©sultat d'une requÃªte est valide pendant trois minutes et qu'une Ã©criture intervient, le cache est renouvelÃ©, si ce mÃªme rÃ©sultat est toujours valide aprÃ¨s trois semaines, il est parfaitement inutile de le rÃ©gÃ©nÃ©rer.
 
-Certaines méthodes permettent de régénérer manuellement le cache pour certaines tables. Par exemple, si lors d'une écriture sur une table un trigger va déclencher l'exécution d'une procédure stockée créant des écritures sur d'autres tables, il sera important de régénérer le cache sur ces autres tables. Il n'est pas possible de détecter ces écritures en PHP dans la mesure où c'est le SGBDR qui gère ça directement. De même si des tâches CRON déclenchent des écritures sans passer par PHP, il n'est pas possible d'intercepter cette information pour mettre à jour le cache correspondant, il conviendra donc d'écrire un code PHP qui effectuera ce nettoyage, code qui devra être exécuté dans une tâche à ajouter au CronTab.
+Certaines mÃ©thodes permettent de rÃ©gÃ©nÃ©rer manuellement le cache pour certaines tables. Par exemple, si lors d'une Ã©criture sur une table un trigger va dÃ©clencher l'exÃ©cution d'une procÃ©dure stockÃ©e crÃ©ant des Ã©critures sur d'autres tables, il sera important de rÃ©gÃ©nÃ©rer le cache sur ces autres tables. Il n'est pas possible de dÃ©tecter ces Ã©critures en PHP dans la mesure oÃ¹ c'est le SGBDR qui gÃ¨re Ã§a directement. De mÃªme si des tÃ¢ches CRON dÃ©clenchent des Ã©critures sans passer par PHP, il n'est pas possible d'intercepter cette information pour mettre Ã  jour le cache correspondant, il conviendra donc d'Ã©crire un code PHP qui effectuera ce nettoyage, code qui devra Ãªtre exÃ©cutÃ© dans une tÃ¢che Ã  ajouter au CronTab.
 
-Par défaut, le cache n'est pas activé, et si vous avez la possibilité de gérer le cache intégré de votre SGBDR, ce sera alors une solution préférable et plus performante.
+Par dÃ©faut, le cache n'est pas activÃ©, et si vous avez la possibilitÃ© de gÃ©rer le cache intÃ©grÃ© de votre SGBDR, ce sera alors une solution prÃ©fÃ©rable et plus performante.
 
 -----------------------------------
 # Conclusion
-Ce package se veut simple d'utilisation de façon à ne pas perdre le développeur dans les complications de l'implémentation, et ce sans avoir à se préoccuper du type de serveur de base de données utilisé, que ce soit MySQL, Oracle, SQL-Server ou tout autre serveur.
-## À venir
-Il reste cependant à développer le code qui permettra d'utiliser des SGBDR autres que MySQL ou PostGreSQL, codes qui pour l'instant n'existent pas. Il s'agit de pouvoir construire le tableau de configuration d'un schéma de données. MySQL et PostGreSQL implémentent INFORMATION_SCHEMA, ce qui facilite grandement ce travail, mais tous les SGBDR ne l'implémentent pas, comme par exemple Oracle. Il existe cependant d'autres manière de collecter ces informations pour aboutir au même résultat.
+Ce package se veut simple d'utilisation de faÃ§on Ã  ne pas perdre le dÃ©veloppeur dans les complications de l'implÃ©mentation, et ce sans avoir Ã  se prÃ©occuper du type de serveur de base de donnÃ©es utilisÃ©, que ce soit MySQL, Oracle, SQL-Server ou tout autre serveur.
+## Ã€ venir
+Il reste cependant Ã  dÃ©velopper le code qui permettra d'utiliser des SGBDR autres que MySQL ou PostGreSQL, codes qui pour l'instant n'existent pas. Il s'agit de pouvoir construire le tableau de configuration d'un schÃ©ma de donnÃ©es. MySQL et PostGreSQL implÃ©mentent INFORMATION_SCHEMA, ce qui facilite grandement ce travail, mais tous les SGBDR ne l'implÃ©mentent pas, comme par exemple Oracle. Il existe cependant d'autres maniÃ¨re de collecter ces informations pour aboutir au mÃªme rÃ©sultat.
 
-Par la suite, le fonctionnement s'appuyant sur PDO, l'intégration de jemdev\dbrm pourra se faire dans n'importe quel projet.
+Par la suite, le fonctionnement s'appuyant sur PDO, l'intÃ©gration de jemdev\dbrm pourra se faire dans n'importe quel projet.
 
-## Les projets à plus long terme
-L'idée d'un générateur de requêtes automatisé flotte dans l'air depuis pas mal de temps mais requiert un niveau de connaissances en mathématiques que je n'ai malheureusement pas.
-Il est question de s'appuyer sur la théorie des graphes pour déterminer quelles jointures devront être établies pour n'avoir à définir que les colonnes de telle ou telle table est attendue pour que le moteur construise automatiquement le chemin approprié.
-Le fichier de configuration permet d'ores et déjà de créer une matrice (le code n'est pas intégré dans le package mais est déjà prêt et opérationnel), il reste à définir l'algorithme approprié de façon à construire des requêtes respectant les standards les plus exigeants.
+## Les projets Ã  plus long terme
+L'idÃ©e d'un gÃ©nÃ©rateur de requÃªtes automatisÃ© flotte dans l'air depuis pas mal de temps mais requiert un niveau de connaissances en mathÃ©matiques que je n'ai malheureusement pas.
+Il est question de s'appuyer sur la thÃ©orie des graphes pour dÃ©terminer quelles jointures devront Ãªtre Ã©tablies pour n'avoir Ã  dÃ©finir que les colonnes de telle ou telle table est attendue pour que le moteur construise automatiquement le chemin appropriÃ©.
+Le fichier de configuration permet d'ores et dÃ©jÃ  de crÃ©er une matrice (le code n'est pas intÃ©grÃ© dans le package mais est dÃ©jÃ  prÃªt et opÃ©rationnel), il reste Ã  dÃ©finir l'algorithme appropriÃ© de faÃ§on Ã  construire des requÃªtes respectant les standards les plus exigeants.
 
-Toute contribution en la matière sera bienvenue.
+Toute contribution en la matiÃ¨re sera bienvenue.
 
 [CeCILL V2]: http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html "Texte complet de la licence CeCILL version 2"
 [Hoa\Registry]: https://github.com/hoaproject/Registry "Le package Hoa\Registry sur Github"
-[Message]: http://jem-web.info/cv/message.html "Envoyer un message à Jean Molliné"
+[Message]: https://jem-dev.com/contacter-jem-developpement/ "Envoyer un message Ã  Jean MollinÃ©"
 [github.com/jemdev/dbrm]: https://github.com/jemdev/dbrm "Le package jemdev\dbrm sur Github"
 [packagist.org/packages/jemdev/dbrm]: https://packagist.org/packages/jemdev/dbrm "La package jemdev\dbrm sur Packagist"
