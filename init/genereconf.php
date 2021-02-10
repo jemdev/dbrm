@@ -322,7 +322,9 @@ CODE_PHP;
                                     $aDetails['type'] == 'TYPE_TINYINT' ||
                                     $aDetails['type'] == 'TYPE_SMALLINT' ||
                                     $aDetails['type'] == 'TYPE_DECIMAL' ||
-                                    $aDetails['type'] == 'TYPE_FLOAT'
+                                    $aDetails['type'] == 'TYPE_FLOAT' ||
+                                    $v == null ||
+                                    $v == "NULL"
                                 )
                             ) || $d == 'vals') ? $v : "'". $v ."'";
                             $sFichier .= <<<CODE_PHP
@@ -458,7 +460,9 @@ CODE_PHP;
                                 $aDetails['type'] == 'TYPE_TINYINT' ||
                                 $aDetails['type'] == 'TYPE_SMALLINT' ||
                                 $aDetails['type'] == 'TYPE_DECIMAL' ||
-                                $aDetails['type'] == 'TYPE_FLOAT'
+                                $aDetails['type'] == 'TYPE_FLOAT' ||
+                                $v == null ||
+                                $v == "NULL"
                             ) || $d == 'vals') ? $v : "'". $v ."'";
                             $sFichier .= <<<CODE_PHP
                             '{$d}' => {$s},
@@ -565,7 +569,9 @@ CODE_PHP;
                                 $aDetails['type'] == 'TYPE_TINYINT' ||
                                 $aDetails['type'] == 'TYPE_SMALLINT' ||
                                 $aDetails['type'] == 'TYPE_DECIMAL' ||
-                                $aDetails['type'] == 'TYPE_FLOAT'
+                                $aDetails['type'] == 'TYPE_FLOAT' ||
+                                $v == null ||
+                                $v == "NULL"
                             ) || $d == 'vals') ? $v : "'". $v ."'";
                             $sFichier .= <<<CODE_PHP
                             '{$d}' => {$s},
