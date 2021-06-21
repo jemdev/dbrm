@@ -27,7 +27,7 @@ class jemdevDbrmException extends \Exception
      * @param   Int         $code           Code de l'erreur
      * @param   \jemdevDbrmException  $precedente     Précédente exception
      */
-    public function __construct($message = null, $code = 0, $precedente = null)
+    public function __construct($message = null, $code = 0, \Throwable $precedente = null)
     {
         parent::__construct($message, $code, $precedente);
         /**

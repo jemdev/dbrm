@@ -111,9 +111,6 @@ abstract class execute
     protected function __construct($dbConf)
     {
         $this->_aConfig = $dbConf;
-// echo('<pre class="vardumpdebug">Configuration :'. PHP_EOL);
-// var_dump($this->_aConfig);
-// echo("</pre>". PHP_EOL);
         if(true === DBCACHE_ACTIF && false !== $this->_bCacheResultat)
         {
             $this->_aListeVues = array();

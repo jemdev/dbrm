@@ -1,6 +1,6 @@
 <?php
 namespace jemdev\dbrm;
-use jemdev\dbrm\Exception;
+use jemdev\dbrm\jemdevDbrmException;
 use jemdev\dbrm\vue;
 use jemdev\dbrm\table;
 use jemdev\dbrm\init\genereconf;
@@ -125,7 +125,7 @@ class dbrm
      * Si le fichier n'existe pas, il sera créé.
      *
      * @param unknown $cheminRepertoireConf
-     * @throws Exception
+     * @throws jemdev\dbrm\jemdevDbrmException
      */
     public function setCheminFichierConf($cheminRepertoireConf)
     {
@@ -137,7 +137,7 @@ class dbrm
         }
         else
         {
-            throw new Exception("Le répertoire de stockage du fichier de configuration est introuvable", E_USER_ERROR);
+            throw new jemdevDbrmException("Le répertoire de stockage du fichier de configuration est introuvable", E_USER_ERROR);
         }
         if(is_null($this->_cheminFichierDbConf) || !file_exists($this->_cheminFichierDbConf))
         {
