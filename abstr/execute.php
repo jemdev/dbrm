@@ -608,13 +608,21 @@ abstract class execute
     /**
      * Activation du mode de débogage des requêtes SQL pour journaliser les requêtes lentes.
      *
-     * @param string    $type       Type de journalisation, php (par défaut, fichier ou courriel.
-     * @param integer   $maxtime    Durée minimum à partir de laquelle on journalise la requête
+     * @param string    $type       Type de journalisation, php (par défaut), fichier ou courriel.
+     * @param integer   $maxtime    Durée minimum (défaut 5) à partir de laquelle on journalise la requête
      * @param string    $fichier    Chemin absolu vers le fichier journal si mode « fichier » sélectionné.
      * @param string    $courriel   Adresse de courriel des messages si mode « courriel » sélectionné
      */
-    protected function _activerModeDebug(string $type='php', integer $maxtime=5, $fichier = null, $courriel = null)
+    protected function _activerModeDebug(string $type=null, integer $maxtime=null, $fichier = null, $courriel = null)
     {
+        if(is_null($type))
+        {
+            $type = 'php';
+        }
+        if(is_null($maxtime))
+        {
+            $maxtime = 5
+        }
         $this->_oDebug = new timedebug($type, $maxtime, $fichier, $courriel);
     }
 }
