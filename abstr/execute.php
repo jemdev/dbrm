@@ -3,6 +3,7 @@ namespace jemdev\dbrm\abstr;
 use jemdev\dbrm\jemdevDbrmException;
 use jemdev\dbrm\cache\cache;
 use Hoa\Registry\Registry;
+use jemdev\dbrm\dev\timedebug;
 /**
  * @package     jemdev
  *
@@ -108,6 +109,13 @@ abstract class execute
      */
     private $_aListeVues = array();
 
+    private $_bModeDebug = false;
+    /**
+     *
+     * @var timedebug
+     */
+    protected $_oDebug;
+
     protected function __construct($dbConf)
     {
         $this->_aConfig = $dbConf;
@@ -179,6 +187,7 @@ abstract class execute
     {
         try
         {
+            $t1 = microtime(true);
             $cache = false;
             $select = "#^SELECT\s.*#";
             $requete = $sql;
@@ -238,6 +247,11 @@ abstract class execute
             {
                 $result = $cache;
             }
+            $t2 = microtime(true);
+//             if(true === $this->_bModeDebug)
+//             {
+//                 $this->_oDebug->verifTime($t1, $t2, $sql, $params);
+//             }
         }
         catch (\PDOException $e)
         {
@@ -589,5 +603,18 @@ abstract class execute
             $type = \PDO::PARAM_STR;
         }
         return($type);
+    }
+
+    /**
+     * Activation du mode de débogage des requêtes SQL pour journaliser les requêtes lentes.
+     *
+     * @param string    $type       Type de journalisation, php (par défaut, fichier ou courriel.
+     * @param integer   $maxtime    Durée minimum à partir de laquelle on journalise la requête
+     * @param string    $fichier    Chemin absolu vers le fichier journal si mode « fichier » sélectionné.
+     * @param string    $courriel   Adresse de courriel des messages si mode « courriel » sélectionné
+     */
+    protected function _activerModeDebug(string $type='php', integer $maxtime=5, string $fichier = null, string $courriel = null)
+    {
+        $this->_oDebug = new timedebug($type, $maxtime, $fichier, $courriel);
     }
 }
