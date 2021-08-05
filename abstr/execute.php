@@ -248,10 +248,10 @@ abstract class execute
                 $result = $cache;
             }
             $t2 = microtime(true);
-//             if(true === $this->_bModeDebug)
-//             {
-//                 $this->_oDebug->verifTime($t1, $t2, $sql, $params);
-//             }
+            if(true === $this->_bModeDebug)
+            {
+                $this->_oDebug->verifTime($t1, $t2, $sql, $params);
+            }
         }
         catch (\PDOException $e)
         {
@@ -613,7 +613,7 @@ abstract class execute
      * @param string    $fichier    Chemin absolu vers le fichier journal si mode « fichier » sélectionné.
      * @param string    $courriel   Adresse de courriel des messages si mode « courriel » sélectionné
      */
-    protected function _activerModeDebug(string $type='php', integer $maxtime=5, string $fichier = null, string $courriel = null)
+    protected function _activerModeDebug(string $type='php', integer $maxtime=5, $fichier = null, $courriel = null)
     {
         $this->_oDebug = new timedebug($type, $maxtime, $fichier, $courriel);
     }
