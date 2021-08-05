@@ -621,7 +621,7 @@ abstract class execute
         }
         if(is_null($maxtime))
         {
-            $maxtime = 5
+            $maxtime = 5;
         }
         $this->_oDebug = new timedebug($type, $maxtime, $fichier, $courriel);
     }
