@@ -613,7 +613,7 @@ abstract class execute
      * @param string    $fichier    Chemin absolu vers le fichier journal si mode « fichier » sélectionné.
      * @param string    $courriel   Adresse de courriel des messages si mode « courriel » sélectionné
      */
-    protected function _activerModeDebug(string $type=null, integer $maxtime=null, $fichier = null, $courriel = null)
+    public function activerModeDebug($type=null, $maxtime=null, $fichier = null, $courriel = null)
     {
         if(is_null($type))
         {
@@ -621,7 +621,7 @@ abstract class execute
         }
         if(is_null($maxtime))
         {
-            $maxtime = 5
+            $maxtime = 5;
         }
         $this->_oDebug = new timedebug($type, $maxtime, $fichier, $courriel);
     }

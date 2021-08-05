@@ -58,10 +58,18 @@ class timedebug
      */
     protected static $_types = [
         'php'       => self::LOG_PHP,
-        'courriel'  => self::LOG_MAIL,
-        'fichier'   => self::LOG_FILE,
+        'courriel'  => self::LOG_COURRIEL,
+        'fichier'   => self::LOG_FICHIER,
     ];
-    public function __construct(string $type='php', integer $maxtime=5, string $fichier = null, string $courriel = null)
+    /**
+     * Constructeur
+     * @param   string  $type
+     * @param   number  $maxtime
+     * @param   string  $fichier
+     * @param   string  $courriel
+     * @throws \InvalidArgumentException
+     */
+    public function __construct($type='php', $maxtime=5, $fichier = null, $courriel = null)
     {
         if(in_array($type, static::$_types))
         {
@@ -80,7 +88,7 @@ class timedebug
             }
             else
             {
-                throw new \InvalidArgumentException("Fichier journal '. $fichier .' est introuvable ou inaccessible en écriture", E_USER_ERROR);
+                throw new \InvalidArgumentException("Fichier journal ". $fichier ." est introuvable ou inaccessible en écriture", E_USER_ERROR);
             }
         }
         if(!is_null($courriel))
@@ -161,7 +169,7 @@ class timedebug
      * @throws  \InvalidArgumentException
      * @return  self
      */
-    public function setTypelog(string $typelog): self
+    public function setTypelog($typelog): self
     {
         if(array_key_exists($typelog, static::$_types))
         {
@@ -179,7 +187,7 @@ class timedebug
      * @param string $logfilepath
      * @return self
      */
-    public function setLogfilepath(string $logfilepath): self
+    public function setLogfilepath($logfilepath): self
     {
         $this->_cheminjournal = $logfilepath;
         return $this;
@@ -190,7 +198,7 @@ class timedebug
      * @param   string $logdbname
      * @return  self
      */
-    public function setLogdbname(string $logdbname): self
+    public function setLogdbname($logdbname): self
     {
         $this->_lognomdb = $logdbname;
         return $this;
@@ -205,7 +213,7 @@ class timedebug
         return $this;
     }
 
-    public function verifTime(float $t1, float $t2, string $sql, $params):void
+    public function verifTime(float $t1, float $t2, $sql, $params):void
     {
         $duree = $t2 - $t1;
         if($duree >= $this->_maxtime)
@@ -222,7 +230,7 @@ class timedebug
         }
     }
 
-    private function _enregistrerEvemenent(float $duree, string $sql, array $params)
+    private function _enregistrerEvemenent(float $duree, k$sql, $params)
     {
         $message = "Durée d'exécution de la requête supérieure au maximum défini de ". $this->_maxtime ." secondes :". PHP_EOL;
         $message .= "\t# Durée : ". $duree ." secondes;". PHP_EOL;
