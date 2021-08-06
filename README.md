@@ -375,9 +375,29 @@ $enreg = $oVue->execute();
 La suite du code ne change pas.
 ### Une instance = une ligne
 Il n'a pas été prévu pour l'instant de pouvoir effectuer une mise à jour ou encore une suppression de lignes multiples dans la mesure où une mise à jour s'effectuera uniquement en fonction de la valeur d'une clé primaire. Pratiquant l'utilisation au quotidien de ce package depuis déjà de nombreuses années et ce sur une application de gestion, je n'ai en réalité jamais eu besoin d'implémenter cette possibilité. Et pour les rares fois où ça doit se produire, je peux contourner ce manque en collectant la liste des clé primaires à prendre en compte dans une mise à jour et chaque ligne sera traitée individuellement dans une boucle.
-
 -----------------------------------
-# Une gestion de cache dynamique (expérimental)
+# Temps d'exécution des requêtes
+Ce petit système s'appuie sur la méthode native `error_log` de PHP pour la journalisation de requêtes lentes. Au fil du développement d'une application, il peut être utile d'identifier des goulets d'étranglement qui ralentissent l'application. On peut alors simplement activer un système de mesure qui effectuera un chronométrage systématique de toutes les requêtes. On paramètre le système en lui indiquant :
+
+- Le type de journalisation : « *php* », « *fichier* » ou « *courriel* »;
+- La durée minimale en secondes à partir de laquelle on journalise une requête;
+- En option le chemin absolu vers un fichier journal où seront enregistrées les informations si le mode « *fichier* » a été défini;
+- En option une adresse de courriel où adresser les messages d'avertissement si le mode « *courriel* » a été défini.
+
+La mise en oeuvre est très simple, exemple :
+
+```php
+$mode = 'fichier';
+$maxtime = 1;
+$fichier = 'app/tmp/logs/journaldb.log';
+$this->_oDb->activerModeDebug($mode, $maxtime, $fichier);
+```
+
+C'est tout : une fois ceci lancé, il suffit alors de naviguer normalement dans l'application, spécialement dans les parties qui affichent des ralentissements apparents, puis de vérifier le fichier journal pour y trouver éventuellement des requêtes qui devraient alors être optimisées pour une accélération.
+
+Pour le mode « *fichier* », si le fichier n'existe pas, il sera créé.
+-----------------------------------
+# Une gestion de cache dynamique
 Un problème d'accès à la configuration du serveur MySQL sur lequel je travaillais m'interdisait de paramétrer le cache intégré et même tout simplement de l'activer par défaut. Souhaitant pouvoir disposer d'un système de gestion de cache de requêtes, j'ai ajouté des classes permettant de gérer cet aspect.
 
 Globalement, chaque requête en lecture peut, si le cache est activé, stocker le résultat en cache sur fichier voire même sur `MemCache` si cette extension est activée. Toute écriture sur une des table va régénérer le cache pour les requêtes où est impliquée la table en question. La durée de vie du cache est donc fonction de l'exécution de nouvelles écritures et non d'une durée de vie pré-définie. Si le résultat d'une requête est valide pendant trois minutes et qu'une écriture intervient, le cache est renouvelé, si ce même résultat est toujours valide après trois semaines, il est parfaitement inutile de le régénérer.
