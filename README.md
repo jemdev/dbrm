@@ -78,7 +78,7 @@ Ce fichier décrit en détail l'ensemble de la structure de données, tables, ta
 Deux méthodes de base seront indispensables :
 
 - setRequete($sql, $aParams = array(), $cache = true)
-Définit la requête à exécuter, en option on peut indiquer des paramètres dans un tableau associatif où chaque index est le nom de la colonne visée associé à sa valeur qui doit y être affectée, et un troisième paramètre permet de désactiver la mise en cache du résultat si ce cache est globalement activé par défaut;
+Définit la requête à exécuter, en option on peut indiquer des paramètres dans un tableau associatif où chaque index est le nom d'une variable sql associée à la valeur qui doit y être affectée, et un troisième paramètre permet d'activer la mise en cache du résultat, cache qui est désactivé par défaut;
 - execute()
 Cette méthode permet d'exécuter directement une méthode définie avec setRequete(). On peut alors envoyer une requête, un appel de procédure stockée ou une fonction utilisateur voire même une requête en écriture bien que cette dernière option ne soit pas recommandée (Voir plus loin l'écriture de données)
 
@@ -99,7 +99,7 @@ Retourne la liste des erreurs rencontrées sous la forme d'un tableau
 # Lecture de données
 Il n'y a pas de générateur de requêtes, à tout le moins pour l'instant. On devra écrire soi-même les requêtes en lecture qui devront être exécutées pour la collecte de données.
 
-Chaque requête peut être paramétrée, sera exécutée avec PDO et retournera une donnée unique, une ligne de données ou bien un tableau de données voire même un objet.
+Chaque requête peut être paramétrée, et sera exécutée avec PDO : elle retournera une donnée unique, une ligne de données ou bien un tableau de données voire même un objet.
 On s'appuiera sur une instance de la classe jemdev\dbrm\vue qu'on définira au préalable.
 
 Exemple : par convention, l'instance de connexion sera la variable « $oVue » et aura été définie en amont (entendez le mot de « vue » au sens SQL du terme).
@@ -152,30 +152,58 @@ Sur une instance donnée, vous disposez des méthodes suivantes :
 ## Mise en pratique
 On écrit des données, comme mentionné en introduction, que sur une seule table à la fois. Pour ce faire, on crée un objet représentant une ligne de ladite table.
 Voici d'abord un exemple schématique :
+Les tables sur lesquelles s'appuient notre exemple auront la forme suivante :
 
+ 1. Table t_interlocuteur_int
+
+```
++---------------------+-------------------------+------+-----+---------+----------------+
+| Field               | Type                    | Null | Key | Default | Extra          |
++---------------------+-------------------------+------+-----+---------+----------------+
+| int_id              | int(10) unsigned        | NO   | PRI | NULL    | auto_increment |
+| adr_id              | int(10) unsigned        | YES  | MUL | NULL    |                |
+| int_nom             | varchar(255)            | NO   |     | NULL    |                |
+| int_prenom          | varchar(255)            | NO   |     | NULL    |                |
+| int_dateinscription | date                    | YES  |     | NULL    |                |
++---------------------+-------------------------+------+-----+---------+----------------+
+```
+ 2. Table t_adresse_adr
+```
++-------------------+------------------+------+-----+---------+----------------+
+| Field             | Type             | Null | Key | Default | Extra          |
++-------------------+------------------+------+-----+---------+----------------+
+| adr_id            | int(10) unsigned | NO   | PRI | NULL    | auto_increment |
+| adr_numero        | varchar(16)      | YES  |     | NULL    |                |
+| adr_libelle_1     | varchar(128)     | NO   |     | NULL    |                |
+| adr_libelle_2     | varchar(128)     | YES  |     | NULL    |                |
+| adr_codepostal    | varchar(16)      | NO   |     | NULL    |                |
+| adr_commune       | varchar(128)     | NO   |     | NULL    |                |
++-------------------+------------------+------+-----+---------+----------------+
+```
+
+**Note importante** : vous ne pourrez pas définir vous-même la valeur de la clé primaire en insérant une nouvelle ligne de données. Cette valeur sera générée automatiquement par le SGBD si cette colonne est bien en `auto-increment`. Lorsqu'on initialise une ligne de données, on peut en option indiquer la valeur de cette clé primaire si on la connaît : le cas échéant, les colonnes seront alors alimentées avec les valeurs correspondant à cette ligne, sinon, nous aurons une ligne vide prête à compléter.
+À présent, écrivons une ligne de données :
 ```php
 <?php
 /* On crée l'instance de la ligne à partir du nom de la table cible */
-$oInterlocuteur = $oDbrm->getLigneInstance('t_interlocuteur_int');
+$oAdresse = $oDbrm->getLigneInstance('t_adresse_adr');
 /*
- * On détermine si on dispose ou non de la clé primaire de la ligne
+ * On détermine si l'on dispose ou non de la clé primaire de la ligne
  * et on stocke ça dans un tableau associatif
  */
-$aPk = (!empty($int_id)) ? array('int_id' => $int_id) : null;
+$aPk = (!empty($adr_id)) ? array('adr_id' => $adr_id) ? null;
 /* On initialise l'instance */
-$oInterlocuteur->init($aPk);
+$oAdresse->init($aPk);
 /*
  * Dès cet instant, notre objet présente chaque colonne de la
  * table t_interlocuteur_int comme des propriétés qu'on peut modifier
  */
-$oInterlocuteur->int_nom    = $int_nom;
-$oInterlocuteur->int_prenom = $int_prenom;
-if(!is_null($int_dateinscription))
-{
-    $oInterlocuteur->int_dateinscription = $int_dateinscription;
-}
+$oAdresse->adr_numero       = $adr_numero;
+$oAdresse->adr_libelle_1    = $adr_libelle_1;
+// ... etc...
+
 /* On peut maintenant sauvegarder ces informations */
-$enreg = $oInterlocuteur->sauvegarder();
+$enreg = $oAdresse->sauvegarder();
 /*
  * Terminé, les écritures pour cette ligne sont terminées.
  * On peut récupérer la valeur de la clé primaire si nécessaire et s'il
@@ -186,19 +214,34 @@ $enreg = $oInterlocuteur->sauvegarder();
  */
 if(true == $enreg)
 {
-    $int_id = $oInterlocuteur->int_id;
     /*
      * Ici, si par exemple vous avez d'autres données à enregistrer, données qui
      * dépendent la la réussite de ce premier enregistrement, vous continuez
      * sur l'enregistrement suivant, exemple :
      */
-    $oAdresse = $oDbrm->getLigneInstance('t_adresse_adr');
-    $aPk = (!empty($adr_id)) ? array('adr_id' => $adr_id) ? null;
-    $oAdresse->init($aPk);
-    $oAdresse->int_id = $int_id;
-    $oAdresse->adr_numero = $adr_numero;
-    // ... etc...
-    $enreg = $oAdresse->sauvegarder();
+    $adr_id         = $oAdresse->adr_id;
+    $oInterlocuteur = $oDbrm->getLigneInstance('t_interlocuteur_int');
+    /*
+     * On détermine si l'on dispose ou non de la clé primaire de la ligne
+     * et on stocke ça dans un tableau associatif
+     */
+    $aPk = (!empty($int_id)) ? array('int_id' => $int_id) : null;
+    /* On initialise l'instance */
+    $oInterlocuteur->init($aPk);
+    /*
+     * Dès cet instant, notre objet présente chaque colonne de la
+     * table t_interlocuteur_int comme des propriétés qu'on peut modifier
+     */
+    $oInterlocuteur->adr_id     = $adr_id;      // Ici, on alimente la clé étrangère définie en enregistrant l'adresse.
+    $oInterlocuteur->int_nom    = $int_nom;
+    $oInterlocuteur->int_prenom = $int_prenom;
+    if(!is_null($int_dateinscription))
+    {
+        $oInterlocuteur->int_dateinscription = $int_dateinscription;
+    }
+    /* On peut maintenant sauvegarder ces informations */
+    $enreg = $oInterlocuteur->sauvegarder();
+    
     // etc... suite selon les besoins.
 }
 else
@@ -206,22 +249,116 @@ else
     // Ici, le code permettant la gestion de l'erreur selon vos propres manières de faire.
 }
 ```
+### En résumé : l'instance d'une table
+Lorsque vous créez une instance pour une table donnée, chaque colonne de cette table devient une propriété de cette instance. Ainsi, la colonne `int_nom` est une propriété de l'objet `$oInterlocuteur` et peut donc être invoquée comme une propriété publique de l'objet.
+Si vous essayez d'affecter une valeur sur une colonne qui n'existe pas dans la table considérée, une exception sera levée. De même que vous ne pourrez pas affecter une valeur arbitraire sur une clé primaire.
+Cependant, il existe un cas où vous pourrez définir vous-même la valeur d'une clé primaire lorsqu'il s'agit d'une clé composite sur une table relationnelle. Ainsi, si au lieu d'un lien direct entre interlocuteur et adresse dans notre exemple nous avions eu une table relationnelle entre les deux, par exemple `r_int_has_adr_iha`, nous aurions les colonnes `int_id` et `adr_id` composant la clé primaire de cette table relationnelle. Dans un tel cas, nous modifierons le code précédent dans la manière suivante:
+```php
+<?php
+/* Définition des valeurs de bases des identifiants */
+$int_id = null;
+$adr_id = null;
 
+/* On crée l'instance de la ligne à partir du nom de la table cible */
+$oAdresse = $oDbrm->getLigneInstance('t_adresse_adr');
+/*
+ * On détermine si l'on dispose ou non de la clé primaire de la ligne
+ * et on stocke ça dans un tableau associatif
+ */
+$aPk = (!empty($adr_id)) ? array('adr_id' => $adr_id) ? null;
+/* On initialise l'instance */
+$oAdresse->init($aPk);
+/*
+ * Dès cet instant, notre objet présente chaque colonne de la
+ * table t_interlocuteur_int comme des propriétés qu'on peut modifier
+ */
+$oAdresse->adr_numero       = $adr_numero;
+$oAdresse->adr_libelle_1    = $adr_libelle_1;
+// ... etc...
+
+/* On peut maintenant sauvegarder ces informations */
+$enreg = $oAdresse->sauvegarder();
+/*
+ * Terminé, les écritures pour cette ligne sont terminées.
+ * On peut récupérer la valeur de la clé primaire si nécessaire et s'il
+ * s'agissait d'une création. Cette clé primaire est automatiquement gérée
+ * et initialisée dans l'instance.
+ * S'il y a eu une erreur, la méthode sauvegarder retournera l'erreur, sinon
+ * elle retournera TRUE
+ */
+if(true == $enreg)
+{
+    $adr_id         = $oAdresse->adr_id;
+    // etc... suite selon les besoins.
+}
+else
+{
+    // Ici, le code permettant la gestion de l'erreur selon vos propres manières de faire.
+}
+$oInterlocuteur = $oDbrm->getLigneInstance('t_interlocuteur_int');
+/*
+ * On détermine si l'on dispose ou non de la clé primaire de la ligne
+ * et on stocke ça dans un tableau associatif
+ */
+$aPk = (!empty($int_id)) ? array('int_id' => $int_id) : null;
+/* On initialise l'instance */
+$oInterlocuteur->init($aPk);
+/*
+ * Dès cet instant, notre objet présente chaque colonne de la
+ * table t_interlocuteur_int comme des propriétés qu'on peut modifier
+ */
+$oInterlocuteur->adr_id     = $adr_id;      // Ici, on alimente la clé étrangère définie en enregistrant l'adresse.
+$oInterlocuteur->int_nom    = $int_nom;
+$oInterlocuteur->int_prenom = $int_prenom;
+if(!is_null($int_dateinscription))
+{
+    $oInterlocuteur->int_dateinscription = $int_dateinscription;
+}
+/* On peut maintenant sauvegarder ces informations */
+$enreg = $oInterlocuteur->sauvegarder();
+if(true == $enreg)
+{
+    $int_id         = $oInterlocuteur->int_id;
+    // etc... suite selon les besoins.
+}
+else
+{
+    // Ici, le code permettant la gestion de l'erreur selon vos propres manières de faire.
+}
+if(!is_null($int_id) && !is_null($adr_id))
+{
+    /* Maintenant, on peut alimenter la tablea relationnelle */
+    $oAdresseInt = $oDbrm->getLigneInstance('r_int_has_adr_iha');
+    /* On définit les éléments de la clé primaire composite */
+    $aPk = array(
+        'int_id' => $int_id,
+        'adr_id' => $adr_id
+    );
+    /* On initialise l'instance de l'objet */
+    $oAdresseInt->init($aPk);
+    /* On peut sauvegarder */
+    $enreg = $oAdresseInt->sauvegarder();
+    if(true !== $enreg)
+    {
+        // Ici, le code permettant la gestion de l'erreur selon vos propres manières de faire.
+    }
+}
+```
+Et là, pas de blocage lors de l'affectation des valeurs pour la clé primaire.
+### En pratique
 Une utilisation pratique vous amènera sans doute à répartir les requêtes en écriture sur différentes tables dans différentes fonctions/méthodes appelées à partir d'un endroit unique, ce qui vous permettra d'utiliser au besoin le mode transactionnel. En démarrant la transaction au départ, vous exécutez chaque enregistrement, et si une des méthodes retourne FALSE à cause d'une erreur, vous pourrez interrompre la succession des enregistrements et terminer la transaction par un ROLLBACK, évitant ainsi de pourrir vos tables avec des données orphelines ou incohérentes.
 
 ### Ce qu'on ne peut pas faire (pour l'instant)
 
 Actuellement, il reste quelques éléments en _TODO-LIST_ et en particulier, lors de l'écriture de données, la possibilité d'affecter non pas une valeur mais un appel de fonction SQL. Supposons par exemple que vous vouliez utiliser une fonction de chiffrement intégrée de MySQL pour affecter une valeur. Il n'est pour l'instant pas possible de faire ceci :
-
-```ruby
+```php
 $instanceLigne->nom_colonne = "AES_ENCRYPT('valeur', 'Clé de chiffrement')";
 ```
-
 #### Comment contourner le problème.
 Pour une utilisation quotidienne, ce n'est pas un réel problème, ce type de cas particulier étant relativement rare. Si cependant vous devez pouvoir effectuer une telle opération, vous avez deux options.
 
-- La première consiste à envoyer une valeur en clair et ajouter un trigger sur la table avec un BEFORE INSERT qui exécutera alors la fonction SQL à appliquer sur la valeur pour l'affecter à la colonne;
-- La seconde consiste à écrire vous-même la requête en écriture INSERT ou UPDATE et à la faire exécuter avec la méthode execute() de l amanière suivante :
+- La première consiste à envoyer une valeur en clair et ajouter un trigger sur la table avec un BEFORE INSERT qui exécutera alors la fonction SQL à appliquer sur la valeur pour l'affecter à la colonne. Mais cette méthode pourra être bloquée sur un serveur mutualisé où les fonctions utilisateurs, procédures stockées et triggers sont désactivés par défaut;
+- La seconde consiste alors à écrire vous-même la requête en écriture INSERT ou UPDATE et à la faire exécuter avec la méthode ` execute()` de la manière suivante :
 
 ```php
 <?php
@@ -236,14 +373,14 @@ $enreg = $oVue->execute();
 ```
 
 La suite du code ne change pas.
-
+### Une instance = une ligne
 Il n'a pas été prévu pour l'instant de pouvoir effectuer une mise à jour ou encore une suppression de lignes multiples dans la mesure où une mise à jour s'effectuera uniquement en fonction de la valeur d'une clé primaire. Pratiquant l'utilisation au quotidien de ce package depuis déjà de nombreuses années et ce sur une application de gestion, je n'ai en réalité jamais eu besoin d'implémenter cette possibilité. Et pour les rares fois où ça doit se produire, je peux contourner ce manque en collectant la liste des clé primaires à prendre en compte dans une mise à jour et chaque ligne sera traitée individuellement dans une boucle.
 
 -----------------------------------
 # Une gestion de cache dynamique (expérimental)
 Un problème d'accès à la configuration du serveur MySQL sur lequel je travaillais m'interdisait de paramétrer le cache intégré et même tout simplement de l'activer par défaut. Souhaitant pouvoir disposer d'un système de gestion de cache de requêtes, j'ai ajouté des classes permettant de gérer cet aspect.
 
-Globalement, chaque requête en lecture peut, si le cache est activé, stocker le résultat en cache sur fichier voire même sur MemCache. Toute écriture sur une des table va régénérer le cache pour les requêtes où est impliquée la table en question. La durée de vie du cache est donc fonction de l'exécution de nouvelles écritures et non d'une durée de vie pré-définie. Si le résultat d'une requête est valide pendant trois minutes et qu'une écriture intervient, le cache est renouvelé, si ce même résultat est toujours valide après trois semaines, il est parfaitement inutile de le régénérer.
+Globalement, chaque requête en lecture peut, si le cache est activé, stocker le résultat en cache sur fichier voire même sur `MemCache` si cette extension est activée. Toute écriture sur une des table va régénérer le cache pour les requêtes où est impliquée la table en question. La durée de vie du cache est donc fonction de l'exécution de nouvelles écritures et non d'une durée de vie pré-définie. Si le résultat d'une requête est valide pendant trois minutes et qu'une écriture intervient, le cache est renouvelé, si ce même résultat est toujours valide après trois semaines, il est parfaitement inutile de le régénérer.
 
 Certaines méthodes permettent de régénérer manuellement le cache pour certaines tables. Par exemple, si lors d'une écriture sur une table un trigger va déclencher l'exécution d'une procédure stockée créant des écritures sur d'autres tables, il sera important de régénérer le cache sur ces autres tables. Il n'est pas possible de détecter ces écritures en PHP dans la mesure où c'est le SGBDR qui gère ça directement. De même si des tâches CRON déclenchent des écritures sans passer par PHP, il n'est pas possible d'intercepter cette information pour mettre à jour le cache correspondant, il conviendra donc d'écrire un code PHP qui effectuera ce nettoyage, code qui devra être exécuté dans une tâche à ajouter au CronTab.
 
@@ -251,9 +388,9 @@ Par défaut, le cache n'est pas activé, et si vous avez la possibilité de gér
 
 -----------------------------------
 # Conclusion
-Ce package se veut simple d'utilisation de façon à ne pas perdre le développeur dans les complications de l'implémentation, et ce sans avoir à se préoccuper du type de serveur de base de données utilisé, que ce soit MySQL, Oracle, SQL-Server ou tout autre serveur.
+Ce package se veut simple d'utilisation de façon à ne pas perdre le développeur dans les complications de l'implémentation, et ce sans avoir à se préoccuper du type de serveur de base de données utilisé, que ce soit MySQL/MariaDb, ou PostGreSQL.
 ## À venir
-Il reste cependant à développer le code qui permettra d'utiliser des SGBDR autres que MySQL ou PostGreSQL, codes qui pour l'instant n'existent pas. Il s'agit de pouvoir construire le tableau de configuration d'un schéma de données. MySQL et PostGreSQL implémentent INFORMATION_SCHEMA, ce qui facilite grandement ce travail, mais tous les SGBDR ne l'implémentent pas, comme par exemple Oracle. Il existe cependant d'autres manière de collecter ces informations pour aboutir au même résultat.
+Il reste à développer le code qui permettra d'utiliser des SGBDR autres que MySQL ou PostGreSQL, codes qui pour l'instant n'existent pas. Il s'agit de pouvoir construire le tableau de configuration d'un schéma de données. MySQL et PostGreSQL implémentent INFORMATION_SCHEMA, ce qui facilite grandement ce travail, mais tous les SGBDR ne l'implémentent pas, comme par exemple Oracle. Il existe cependant d'autres manière de collecter ces informations pour aboutir au même résultat.
 
 Par la suite, le fonctionnement s'appuyant sur PDO, l'intégration de jemdev\dbrm pourra se faire dans n'importe quel projet.
 
