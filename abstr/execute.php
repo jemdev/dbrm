@@ -613,7 +613,7 @@ abstract class execute
      * @param string    $fichier    Chemin absolu vers le fichier journal si mode « fichier » sélectionné.
      * @param string    $courriel   Adresse de courriel des messages si mode « courriel » sélectionné
      */
-    protected function _activerModeDebug(string $type=null, integer $maxtime=null, $fichier = null, $courriel = null)
+    public function activerModeDebug($type=null, $maxtime=null, $fichier = null, $courriel = null)
     {
         if(is_null($type))
         {
@@ -622,6 +622,24 @@ abstract class execute
         if(is_null($maxtime))
         {
             $maxtime = 5;
+        }
+        if(!is_null($fichier))
+        {
+            if(!file_exists($fichier))
+            {
+                if(false != ($f = fopen($fichier, 'a+')))
+                {
+                    fclose($f);
+                }
+                else
+                {
+                    throw new \Exception("Ouverture du fichier ". $fichier ." impossible. Vérifiez les droits d'accès.");
+                }
+            }
+            elseif(!is_writable($fichier))
+            {
+                throw new \Exception("Accès au fichier ". $fichier ." impossible en écriture. Vérifiez les droits d'accès.");
+            }
         }
         $this->_oDebug = new timedebug($type, $maxtime, $fichier, $courriel);
     }
