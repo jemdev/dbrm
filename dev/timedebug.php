@@ -57,11 +57,19 @@ class timedebug
      * @var array<int, string>  $_types Types de journalisation supportés
      */
     protected static $_types = [
-        'php'       => self::LOG_PHP,
-        'courriel'  => self::LOG_MAIL,
-        'fichier'   => self::LOG_FILE,
+    'php'       => self::LOG_PHP,
+    'courriel'  => self::LOG_COURRIEL,
+    'fichier'   => self::LOG_FICHIER,
     ];
-    public function __construct(string $type='php', integer $maxtime=5, string $fichier = null, string $courriel = null)
+    /**
+     * Constructeur
+     * @param   string  $type
+     * @param   number  $maxtime
+     * @param   string  $fichier
+     * @param   string  $courriel
+     * @throws \InvalidArgumentException
+     */
+    public function __construct($type='php', $maxtime=5, $fichier = null, $courriel = null)
     {
         if(in_array($type, static::$_types))
         {
@@ -80,7 +88,7 @@ class timedebug
             }
             else
             {
-                throw new \InvalidArgumentException("Fichier journal '. $fichier .' est introuvable ou inaccessible en écriture", E_USER_ERROR);
+                throw new \InvalidArgumentException("Fichier journal ". $fichier ." est introuvable ou inaccessible en écriture", E_USER_ERROR);
             }
         }
         if(!is_null($courriel))
