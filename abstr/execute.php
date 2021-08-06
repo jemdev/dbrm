@@ -623,6 +623,24 @@ abstract class execute
         {
             $maxtime = 5;
         }
+        if(!is_null($fichier))
+        {
+            if(!file_exists($fichier))
+            {
+                if(false != ($f = fopen($fichier, 'a+')))
+                {
+                    fclose($f);
+                }
+                else
+                {
+                    throw new \Exception("Ouverture du fichier ". $fichier ." impossible. Vérifiez les droits d'accès.");
+                }
+            }
+            elseif(!is_writable($fichier))
+            {
+                throw new \Exception("Accès au fichier ". $fichier ." impossible en écriture. Vérifiez les droits d'accès.");
+            }
+        }
         $this->_oDebug = new timedebug($type, $maxtime, $fichier, $courriel);
     }
 }
