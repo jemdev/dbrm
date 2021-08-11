@@ -131,7 +131,7 @@ class ligneInstance extends execute
      *
      * @var Object
      */
-    private $_oDebug;
+    protected $_oDebug;
 
     private $_bNewLine = false;
 
