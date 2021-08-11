@@ -126,13 +126,6 @@ class ligneInstance extends execute
      */
     private $_wr = false;
 
-    /**
-     * Instance de la classe utilitaire de débogage.
-     *
-     * @var Object
-     */
-    private $_oDebug;
-
     private $_bNewLine = false;
 
     /**

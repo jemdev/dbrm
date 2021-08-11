@@ -57,9 +57,9 @@ class timedebug
      * @var array<int, string>  $_types Types de journalisation supportés
      */
     protected static $_types = [
-        'php'       => self::LOG_PHP,
-        'courriel'  => self::LOG_COURRIEL,
-        'fichier'   => self::LOG_FICHIER,
+    'php'       => self::LOG_PHP,
+    'courriel'  => self::LOG_COURRIEL,
+    'fichier'   => self::LOG_FICHIER,
     ];
     /**
      * Constructeur
@@ -169,7 +169,7 @@ class timedebug
      * @throws  \InvalidArgumentException
      * @return  self
      */
-    public function setTypelog($typelog): self
+    public function setTypelog(string $typelog): self
     {
         if(array_key_exists($typelog, static::$_types))
         {
@@ -187,7 +187,7 @@ class timedebug
      * @param string $logfilepath
      * @return self
      */
-    public function setLogfilepath($logfilepath): self
+    public function setLogfilepath(string $logfilepath): self
     {
         $this->_cheminjournal = $logfilepath;
         return $this;
@@ -198,7 +198,7 @@ class timedebug
      * @param   string $logdbname
      * @return  self
      */
-    public function setLogdbname($logdbname): self
+    public function setLogdbname(string $logdbname): self
     {
         $this->_lognomdb = $logdbname;
         return $this;
@@ -213,7 +213,7 @@ class timedebug
         return $this;
     }
 
-    public function verifTime(float $t1, float $t2, $sql, $params):void
+    public function verifTime(float $t1, float $t2, string $sql, $params):void
     {
         $duree = $t2 - $t1;
         if($duree >= $this->_maxtime)
@@ -230,7 +230,7 @@ class timedebug
         }
     }
 
-    private function _enregistrerEvemenent(float $duree, k$sql, $params)
+    private function _enregistrerEvemenent(float $duree, string $sql, array $params)
     {
         $message = "Durée d'exécution de la requête supérieure au maximum défini de ". $this->_maxtime ." secondes :". PHP_EOL;
         $message .= "\t# Durée : ". $duree ." secondes;". PHP_EOL;
