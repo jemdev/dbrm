@@ -202,6 +202,41 @@ class vue extends execute
     }
 
     /**
+     * Initialisation d'une variable utilisateur qui sera utilisée dans
+     * une requête.
+     *
+     * Exemple d'utilisation :
+     * <code>
+     * // Initialisation d'un compteur de ligne à zéro
+     * $this->-Db->setVariableUtilisateur('@v_compteur', 0);
+     * // Définition de la requête principale
+     * $sql = "SELECT". PHP_EOL .
+     *        "  @v_compteur := @v_compteur +1 AS rang,". PHP_EOL .
+     *        "  col_1". PHP_EOL .
+     *        "FROM matable";
+     * // Initialisation de la requête
+     * $this->setRequete($sql);
+     * // Exécution de la requête et récupératin du résultat.
+     * $maliste =  = $this->_oDb->fetchAssoc();
+     * </code>
+     * Le résultat sera ici un tableau dont la première colonne sera un nombre automatiquement
+     * incrémenté de 1 à chaque ligne, la première commençant ici à 1.
+     *
+     * @param   String  $var    Variable qui sera définie sous la forme « @v_variable »
+     * @param   mixed   $valeur Optionnel, valeur initiale de la variable avant l'exécution de
+     *                          la requête qui l'utilisera.
+     * @return  boolean
+     */
+    public function setVariableUtilisateur($var, $valeur = null)
+    {
+        $sql = "SET ". $var ." = :p_valeur";
+        $param = array(':p_valeur' => $valeur);
+        $this->setRequete($sql, $params);
+        $retour = $this->execute();
+        return $retour;
+    }
+
+    /**
      * Activation ou désactivation dynamique et temporaire du cache de requête.
      * Indépendamment de la constante d'application.
      *
