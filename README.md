@@ -408,13 +408,17 @@ Par défaut, le cache n'est pas activé, et si vous avez la possibilité de gér
 
 -----------------------------------
 # Conclusion
+
 Ce package se veut simple d'utilisation de façon à ne pas perdre le développeur dans les complications de l'implémentation, et ce sans avoir à se préoccuper du type de serveur de base de données utilisé, que ce soit MySQL/MariaDb, ou PostGreSQL.
+
 ## À venir
+
 Il reste à développer le code qui permettra d'utiliser des SGBDR autres que MySQL ou PostGreSQL, codes qui pour l'instant n'existent pas. Il s'agit de pouvoir construire le tableau de configuration d'un schéma de données. MySQL et PostGreSQL implémentent INFORMATION_SCHEMA, ce qui facilite grandement ce travail, mais tous les SGBDR ne l'implémentent pas, comme par exemple Oracle. Il existe cependant d'autres manière de collecter ces informations pour aboutir au même résultat.
 
 Par la suite, le fonctionnement s'appuyant sur PDO, l'intégration de jemdev\dbrm pourra se faire dans n'importe quel projet.
 
 ## Les projets à plus long terme
+
 L'idée d'un générateur de requêtes automatisé flotte dans l'air depuis pas mal de temps mais requiert un niveau de connaissances en mathématiques que je n'ai malheureusement pas.
 Il est question de s'appuyer sur la théorie des graphes pour déterminer quelles jointures devront être établies pour n'avoir à définir que les colonnes de telle ou telle table est attendue pour que le moteur construise automatiquement le chemin approprié.
 Le fichier de configuration permet d'ores et déjà de créer une matrice (le code n'est pas intégré dans le package mais est déjà prêt et opérationnel), il reste à définir l'algorithme approprié de façon à construire des requêtes respectant les standards les plus exigeants.
