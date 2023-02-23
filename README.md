@@ -373,10 +373,14 @@ $enreg = $oVue->execute();
 ```
 
 La suite du code ne change pas.
+
 ### Une instance = une ligne
 Il n'a pas été prévu pour l'instant de pouvoir effectuer une mise à jour ou encore une suppression de lignes multiples dans la mesure où une mise à jour s'effectuera uniquement en fonction de la valeur d'une clé primaire. Pratiquant l'utilisation au quotidien de ce package depuis déjà de nombreuses années et ce sur une application de gestion, je n'ai en réalité jamais eu besoin d'implémenter cette possibilité. Et pour les rares fois où ça doit se produire, je peux contourner ce manque en collectant la liste des clé primaires à prendre en compte dans une mise à jour et chaque ligne sera traitée individuellement dans une boucle.
+
 -----------------------------------
+
 # Temps d'exécution des requêtes
+
 Ce petit système s'appuie sur la méthode native `error_log` de PHP pour la journalisation de requêtes lentes. Au fil du développement d'une application, il peut être utile d'identifier des goulets d'étranglement qui ralentissent l'application. On peut alors simplement activer un système de mesure qui effectuera un chronométrage systématique de toutes les requêtes. On paramètre le système en lui indiquant :
 
 - Le type de journalisation : « *php* », « *fichier* » ou « *courriel* »;
