@@ -230,7 +230,7 @@ class vue extends execute
     public function setVariableUtilisateur($var, $valeur = null)
     {
         $sql = "SET ". $var ." = :p_valeur";
-        $param = array(':p_valeur' => $valeur);
+        $params = array(':p_valeur' => $valeur);
         $this->setRequete($sql, $params);
         $retour = $this->execute();
         return $retour;
