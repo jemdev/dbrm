@@ -57,9 +57,9 @@ class timedebug
      * @var array<int, string>  $_types Types de journalisation supportés
      */
     protected static $_types = [
-    'php'       => self::LOG_PHP,
-    'courriel'  => self::LOG_COURRIEL,
-    'fichier'   => self::LOG_FICHIER,
+        'php'       => self::LOG_PHP,
+        'courriel'  => self::LOG_COURRIEL,
+        'fichier'   => self::LOG_FICHIER,
     ];
     /**
      * Constructeur
@@ -71,7 +71,7 @@ class timedebug
      */
     public function __construct($type='php', $maxtime=5, $fichier = null, $courriel = null)
     {
-        if(in_array($type, self::$_types))
+        if(array_key_exists($type, self::$_types))
         {
             $this->_typelog = self::$_types[$type];
         }
