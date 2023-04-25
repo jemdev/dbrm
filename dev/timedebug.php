@@ -71,9 +71,9 @@ class timedebug
      */
     public function __construct($type='php', $maxtime=5, $fichier = null, $courriel = null)
     {
-        if(in_array($type, static::$_types))
+        if(in_array($type, self::$_types))
         {
-            $this->_typelog = static::$_types[$type];
+            $this->_typelog = self::$_types[$type];
         }
         else
         {
