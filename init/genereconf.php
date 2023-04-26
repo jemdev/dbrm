@@ -764,7 +764,7 @@ CODE_PHP;
             $aFk = array();
             for($c = 0; $c < $nc; $c++)
             {
-                $aConf = $this->_addInfosColonnes($aConf, $table, $section, $aColonnes[$c]);
+                $aConf = $this->_addInfosColonnes($aConf, $table, $aColonnes[$c], $section);
                 if($section != 'vues')
                 {
                     if($aColonnes[$c]['COLUMN_KEY'] == 'PRI' || $aColonnes[$c]['COLUMN_KEY'] == 'PRIMARY KEY')
@@ -794,21 +794,21 @@ CODE_PHP;
             }
             if(count($aPk) > 0)
             {
-                $aConf = $this->_addPrimaryKeys($aConf, $table, $section, $aPk);
+                $aConf = $this->_addPrimaryKeys($aConf, $table, $aPk, $section);
             }
             if(count($aUk) > 0)
             {
-                $aConf = $this->_addUniqueKeys($aConf, $table, $section, $aUk);
+                $aConf = $this->_addUniqueKeys($aConf, $table, $aUk, $section);
             }
             if(count($aFk) > 0)
             {
-                $aConf = $this->_addForeignKeys($aConf, $table, $section, $aFk);
+                $aConf = $this->_addForeignKeys($aConf, $table, $aFk, $section);
             }
         }
         return $aConf;
     }
 
-    private function _addInfosColonnes($aConf, $table, $section = 'tables', $aInfosColonne)
+    private function _addInfosColonnes($aConf, $table, $aInfosColonne, $section = 'tables')
     {
         $col = $aInfosColonne['COLUMN_NAME'];
         $sType = ($aInfosColonne['DATA_TYPE'] == 'int')
@@ -861,19 +861,19 @@ CODE_PHP;
         return $aConf;
     }
 
-    private function _addPrimaryKeys($aConf, $table, $section = 'tables', $aPks)
+    private function _addPrimaryKeys($aConf, $table, $aPks, $section = 'tables')
     {
         $aConf[$section][$table]['keys']['pk'] = $aPks;
         return $aConf;
     }
 
-    private function _addUniqueKeys($aConf, $table, $section = 'tables', $aUks)
+    private function _addUniqueKeys($aConf, $table, $aUks, $section = 'tables')
     {
         $aConf[$section][$table]['keys']['uk'] = $aUks;
         return $aConf;
     }
 
-    private  function _addForeignKeys($aConf, $table, $section = 'tables', $aFks)
+    private function _addForeignKeys($aConf, $table, $aFks, $section = 'tables')
     {
         $aConf[$section][$table]['keys']['fk'] = $aFks;
         return $aConf;
