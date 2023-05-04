@@ -99,9 +99,9 @@ class timedebug
 
     /**
      * Retourne la valeur de $_maxtime
-     * @return integer
+     * @return Int
      */
-    public function getMaxtime(): integer
+    public function getMaxtime(): Int
     {
         return $this->_maxtime;
     }
@@ -153,10 +153,10 @@ class timedebug
 
     /**
      * Définit la durée minimum à partir de laquelle l'exécution de la requête sera journalisée
-     * @param integer $maxtime
+     * @param Int $maxtime
      * @return self
      */
-    public function setMaxtime(integer $maxtime): self
+    public function setMaxtime(Int $maxtime): self
     {
         $this->_maxtime = $maxtime;
         return $this;
