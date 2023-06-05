@@ -133,7 +133,7 @@ class vue extends execute
         elseif($out == self::JEMDB_FETCH_NUM )
         {
             $aInfosTmp = $this->_getDatas(self::JEMDB_FETCH_NUM);
-            $aInfos = (count($aInfosTmp) > 0) ? $aInfos[0] : array();
+            $aInfos = (count($aInfosTmp) > 0) ? $aInfosTmp[0] : array();
         }
         else
         {
