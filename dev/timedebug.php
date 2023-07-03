@@ -59,7 +59,7 @@ class timedebug
     protected static $_types = [
         'php'       => self::LOG_PHP,
         'courriel'  => self::LOG_COURRIEL,
-        'fichier'   => self::LOG_FICHIER,
+        'fichier'   => self::LOG_FICHIER
     ];
     /**
      * Constructeur
@@ -71,7 +71,7 @@ class timedebug
      */
     public function __construct($type='php', $maxtime=5, $fichier = null, $courriel = null)
     {
-        if(in_array($type, static::$_types))
+        if(array_key_exists($type, static::$_types))
         {
             $this->_typelog = self::$_types[$type];
         }
