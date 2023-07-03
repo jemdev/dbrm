@@ -71,7 +71,7 @@ class timedebug
      */
     public function __construct($type='php', $maxtime=5, $fichier = null, $courriel = null)
     {
-        if(in_array($type, self::$_types))
+        if(in_array($type, static::$_types))
         {
             $this->_typelog = self::$_types[$type];
         }
@@ -148,7 +148,7 @@ class timedebug
      */
     public function getTypes():array
     {
-        return array_keys(static::$_types);
+        return array_keys(self::$_types);
     }
 
     /**
@@ -173,7 +173,7 @@ class timedebug
     {
         if(array_key_exists($typelog, static::$_types))
         {
-            $this->_typelog = static::$_types[$typelog];
+            $this->_typelog = self::$_types[$typelog];
         }
         else
         {

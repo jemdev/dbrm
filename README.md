@@ -373,10 +373,14 @@ $enreg = $oVue->execute();
 ```
 
 La suite du code ne change pas.
+
 ### Une instance = une ligne
 Il n'a pas été prévu pour l'instant de pouvoir effectuer une mise à jour ou encore une suppression de lignes multiples dans la mesure où une mise à jour s'effectuera uniquement en fonction de la valeur d'une clé primaire. Pratiquant l'utilisation au quotidien de ce package depuis déjà de nombreuses années et ce sur une application de gestion, je n'ai en réalité jamais eu besoin d'implémenter cette possibilité. Et pour les rares fois où ça doit se produire, je peux contourner ce manque en collectant la liste des clé primaires à prendre en compte dans une mise à jour et chaque ligne sera traitée individuellement dans une boucle.
+
 -----------------------------------
+
 # Temps d'exécution des requêtes
+
 Ce petit système s'appuie sur la méthode native `error_log` de PHP pour la journalisation de requêtes lentes. Au fil du développement d'une application, il peut être utile d'identifier des goulets d'étranglement qui ralentissent l'application. On peut alors simplement activer un système de mesure qui effectuera un chronométrage systématique de toutes les requêtes. On paramètre le système en lui indiquant :
 
 - Le type de journalisation : « *php* », « *fichier* » ou « *courriel* »;
@@ -677,13 +681,17 @@ Il n'impose pas non plus de faire usage d'une sorte de langage bâtard entre le 
 
 -----------------------------------
 # Conclusion
+
 Ce package se veut simple d'utilisation de façon à ne pas perdre le développeur dans les complications de l'implémentation, et ce sans avoir à se préoccuper du type de serveur de base de données utilisé, que ce soit MySQL/MariaDb, ou PostGreSQL.
+
 ## À venir
+
 Il reste à développer le code qui permettra d'utiliser des SGBDR autres que MySQL ou PostGreSQL, codes qui pour l'instant n'existent pas. Il s'agit de pouvoir construire le tableau de configuration d'un schéma de données. MySQL et PostGreSQL implémentent INFORMATION_SCHEMA, ce qui facilite grandement ce travail, mais tous les SGBDR ne l'implémentent pas, comme par exemple Oracle. Il existe cependant d'autres manière de collecter ces informations pour aboutir au même résultat.
 
 Par la suite, le fonctionnement s'appuyant sur PDO, l'intégration de jemdev\dbrm pourra se faire dans n'importe quel projet.
 
 ## Les projets à plus long terme
+
 L'idée d'un générateur de requêtes automatisé flotte dans l'air depuis pas mal de temps mais requiert un niveau de connaissances en mathématiques que je n'ai malheureusement pas.
 Il est question de s'appuyer sur la théorie des graphes pour déterminer quelles jointures devront être établies pour n'avoir à définir que les colonnes de telle ou telle table est attendue pour que le moteur construise automatiquement le chemin approprié.
 Le fichier de configuration permet d'ores et déjà de créer une matrice (le code n'est pas intégré dans le package mais est déjà prêt et opérationnel), il reste à définir l'algorithme approprié de façon à construire des requêtes respectant les standards les plus exigeants.

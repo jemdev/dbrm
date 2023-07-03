@@ -315,6 +315,10 @@ abstract class execute
                 {
                     foreach($p as $key => $val)
                     {
+                        if($val == "NULL")
+                        {
+                            $val = null;
+                        }
                         $typeData = $this->_getPDOConstantType($val);
                         $sth->bindValue($key, $val, $typeData);
                     }
