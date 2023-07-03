@@ -2,7 +2,6 @@
 namespace jemdev\dbrm\abstr;
 use jemdev\dbrm\jemdevDbrmException;
 use jemdev\dbrm\cache\cache;
-use Hoa\Registry\Registry;
 use jemdev\dbrm\dev\timedebug;
 /**
  * @package     jemdev
@@ -127,13 +126,11 @@ abstract class execute
                 $this->_aListeVues[$vue] = $infos['tables'];
             }
             $this->_oCache = new cache(DB_CACHE, VALIDE_DBCACHE, INFOS_DBCACHE, $this->_aListeVues);
-            $oMemcache = Registry::isRegistered('oMemcache') ? Registry::get('oMemcache') : false;
             if(true == MEMCACHE_ACTIF)
             {
                 if(false === $oMemcache)
                 {
                     $oMemcache = new \Memcache;
-                    Registry::set('oMemcache', $oMemcache);
                 }
                 $this->_oCache->activerMemcache($oMemcache, MEMCACHE_SERVER, MEMCACHE_PORT);
             }
@@ -143,43 +140,34 @@ abstract class execute
 
     protected function _connect($aInfosCnx)
     {
-        if(false === (Registry::isRegistered('dbCnx')))
+        $dns  = $aInfosCnx['pilote'];
+        $dns .= ':host=' . $aInfosCnx['server'];
+        $dns .= ((!empty($aInfosCnx['port'])) ? (';port=' . $aInfosCnx['port']) : '');
+        $dns .= ';dbname=' . $aInfosCnx['name'];
+        $options = ($aInfosCnx['pilote'] == 'mysql') ? array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8;') : null;
+        try
         {
-            $dns  = $aInfosCnx['pilote'];
-            $dns .= ':host=' . $aInfosCnx['server'];
-            $dns .= ((!empty($aInfosCnx['port'])) ? (';port=' . $aInfosCnx['port']) : '');
-            $dns .= ';dbname=' . $aInfosCnx['name'];
-            $options = ($aInfosCnx['pilote'] == 'mysql') ? array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8;') : null;
-            try
-            {
-                $this->_dbh = new \PDO($dns, $aInfosCnx['user'], $aInfosCnx['mdp'], $options);
-                Registry::set('dbCnx', $this->_dbh);
-                $this->_dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-                $this->_bConnecte = true;
-            }
-            catch (\PDOException $p)
-            {
-                $this->_bConnecte = false;
-                $this->_aDbErreurs[] = array(
-                    'La connexion a échoué',
-                    'Message : '. $p->getMessage(),
-                    'Trace : '. $p->getTraceAsString()
-                );
-            }
-            catch (jemdevDbrmException $e)
-            {
-                $this->_bConnecte = false;
-                $this->_aDbErreurs[] = array(
-                    'La connexion a échoué',
-                    'Message : '. $e->getMessage(),
-                    'Trace : '. $e->getTraceAsString()
-                );
-            }
-        }
-        else
-        {
-            $this->_dbh = Registry::get('dbCnx');
+            $this->_dbh = new \PDO($dns, $aInfosCnx['user'], $aInfosCnx['mdp'], $options);
+            $this->_dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             $this->_bConnecte = true;
+        }
+        catch (\PDOException $p)
+        {
+            $this->_bConnecte = false;
+            $this->_aDbErreurs[] = array(
+                'La connexion a échoué',
+                'Message : '. $p->getMessage(),
+                'Trace : '. $p->getTraceAsString()
+            );
+        }
+        catch (jemdevDbrmException $e)
+        {
+            $this->_bConnecte = false;
+            $this->_aDbErreurs[] = array(
+                'La connexion a échoué',
+                'Message : '. $e->getMessage(),
+                'Trace : '. $e->getTraceAsString()
+            );
         }
     }
 

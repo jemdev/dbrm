@@ -406,6 +406,275 @@ Certaines méthodes permettent de régénérer manuellement le cache pour certai
 
 Par défaut, le cache n'est pas activé, et si vous avez la possibilité de gérer le cache intégré de votre SGBDR, ce sera alors une solution préférable et plus performante.
 
+# Intégration avec Symfony
+
+Pour ceux désirant travailler avec Symfony et accéder aux données d'une base sans recourir à Doctrine, cette solution présente une alternative viable, quoique peut-être plus exigeante techniquement.
+Ici, pas question de pouvoir modifier la structure de la base de données avec cette librairie : ça relève du DBA et il est hors de question qu'un développeur touche à cette structure. Cependant, le système même de jemdev\dbrm permet les évolution de la structure de données et un fichier de configuration doit pouvoir être généré. Le système de ligne de commandes dans Symfony se révèle pour celà fort pratique. Nous allons donc voir ici comment générer ce fichier d'une seule ligne de commande.
+
+Note : *ce qui suit n'est qu'une suggestion qui fonctionne mais que vous pouvez vouloir implémenter autrement.*
+
+## Les fichiers de configuration
+
+Dans le répertoire */config* de l'application Symfony, nous allons créer un sous-répertoire dans /config/packages que nous nommerons /dbrm.
+
+Dans ce nouveau répertoire, nous allons créer deux fichiers de base, *appConf.php* et *dbConf.php*, et nous inscrirons des éléments de base pour rendre le système de configuration opérationnel.
+
+#### Le fichier appConf.php
+
+```php
+<?php
+$mode = (defined('APP_ENV')) ? APP_ENV : 'dev';
+defined("MODE")                 || define("MODE",                   $mode);
+defined("DS")                   || define("DS",                     DIRECTORY_SEPARATOR);
+defined("REP_ROOT")             || define("REP_ROOT",               dirname(dirname(dirname(__DIR__))). DS);
+/**
+ * Paramètres de connexion root pour pouvoir récupérer si nécessaire
+ * les informations de base de données et construire le fichier dbConf.php
+ */
+$db_server_type = 'mysql';
+switch (MODE)
+{
+    case 'dev':
+        $db_app_server = 'localhost';
+        $db_app_port   = '3306';
+        $db_app_schema = 'monshema';
+        $db_app_user   = 'monutilisateur';
+        $db_app_pwd    = 'abc123';
+        $db_bin_path   = '/var/lib/mysql/bin';
+        $db_root_schema = "INFORMATION_SCHEMA";
+        break;
+    case 'test':
+        $db_app_server = 'bxex.myd.infomaniak.com';
+        $db_app_port   = '3306';
+        $db_app_schema = 'monshematest';
+        $db_app_user   = 'monutilisateurtest';
+        $db_app_pwd    = 'abc123test';
+        $db_bin_path   = '/var/lib/mysql/bin';
+        $db_root_schema = "INFORMATION_SCHEMA";
+        break;
+    case 'prd':
+    case 'prod':
+        $db_app_server = 'bxex.myd.infomaniak.com';
+        $db_app_port   = '3306';
+        $db_app_schema = 'monshema';
+        $db_app_user   = 'monutilisateur';
+        $db_app_pwd    = 'abc123';
+        $db_bin_path   = '/var/lib/mysql/bin';
+        $db_root_schema = "INFORMATION_SCHEMA";
+        break;
+}
+defined("DB_ROOT_SERVER")       || define("DB_ROOT_SERVER",         $db_app_server);
+defined("DB_ROOT_USER")         || define("DB_ROOT_USER",           $db_app_user);
+defined("DB_ROOT_MDP")          || define("DB_ROOT_MDP",            $db_app_pwd);
+defined("DB_ROOT_SCHEMA")       || define("DB_ROOT_SCHEMA",         $db_root_schema);
+defined("DB_ROOT_TYPEDB")       || define("DB_ROOT_TYPEDB",         $db_server_type);
+defined("DB_ROOT_DBPORT")       || define("DB_ROOT_DBPORT",         $db_app_port);
+defined("DB_APP_SCHEMA")        || define("DB_APP_SCHEMA",          $db_app_schema);
+defined("DB_APP_SERVER")        || define("DB_APP_SERVER",          $db_app_server);
+defined("DB_APP_USER")          || define("DB_APP_USER",            $db_app_user);
+defined("DB_APP_PASSWORD")      || define("DB_APP_PASSWORD",        $db_app_pwd);
+defined("DB_BIN_PATH")          || define("DB_BIN_PATH",            $db_bin_path);
+
+```
+
+C'est pour l'instant tout ce dont nous avons besoin dans ce fichier.
+
+#### Le fichier dbConf.php
+
+Ce fichier est normalement généré par une des librairies du package, mais en fournissant le squelette de base, nous allons simplifier les choses.
+
+```php
+<?php
+/**
+ * @package     jemdev
+ *
+ * Ce code est fourni tel quel sans garantie.
+ * Vous avez la liberté de l'utiliser et d'y apporter les modifications
+ * que vous souhaitez. Vous devrez néanmoins respecter les termes
+ * de la licence CeCILL dont le fichier est joint à cette librairie.
+ * {@see http://www.cecill.info/licences/Licence_CeCILL_V2-fr.html}
+ *
+ * Date de génération du fichier : 12/05/2023 11:05:36
+ */
+
+/**
+ * Définition des constantes sur les types de données
+ */
+defined('TYPE_INTEGER') || define('TYPE_INTEGER', 'INT');
+defined('TYPE_VARCHAR') || define('TYPE_VARCHAR', 'VARCHAR');
+defined('TYPE_ENUM') || define('TYPE_ENUM', 'ENUM');
+defined('TYPE_FLOAT') || define('TYPE_FLOAT', 'FLOAT');
+defined('TYPE_TINYINT') || define('TYPE_TINYINT', 'TINYINT');
+defined('TYPE_DATE') || define('TYPE_DATE', 'DATE');
+defined('TYPE_MEDIUMINT') || define('TYPE_MEDIUMINT', 'MEDIUMINT');
+defined('TYPE_BLOB') || define('TYPE_BLOB', 'BLOB');
+/**
+ * Description détaillée des schémas
+ */
+$dbConf = array(
+    0 => array(
+        'schema' => array(
+            'name'   => DB_APP_SCHEMA,
+            'SGBD'   => DB_ROOT_TYPEDB,
+            'server' => DB_APP_SERVER,
+            'port'   => DB_ROOT_DBPORT,
+            'user'   => DB_APP_USER,
+            'mdp'    => DB_APP_PASSWORD,
+            'pilote' => DB_ROOT_TYPEDB
+        ),
+        'tables' => array(),
+        'relations' => array(),
+        'vues' => array()
+    )
+);
+```
+
+Ne modifiez rien dans cette base. Et par la suite, ne modifiez jamais manuellement ce fichier.
+
+## Mise en place de la commande
+
+Dans notre classe, nous avons défini un nom pour la commande, « *app:dbrmconf* ».
+
+Ouvrons maintenant une console et, après nous être placés dans le répertoire de l'application, créons la commande :
+
+```
+$ php bin/console make:command app:dbrmconf
+```
+
+Si tout s'est correctement déroulé, vous verrez alors s'afficher ce qui suit :
+
+```
+ created: src/Command/DbrmconfCommand.php
+
+           
+  Success! 
+           
+
+ Next: open your new command class and customize it!
+ Find the documentation at https://symfony.com/doc/current/console.html
+```
+
+Une classe a donc été créée dans le répertoire */src/Command*, nous allons y apporter quelques modifications. Éditons cette classe.
+
+## Configuration de la classe de commande
+
+Voici le code nécessaire :
+
+```php
+<?php
+namespace App\Command;
+
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use jemdev\dbrm\init\genereconf;
+use jemdev\dbrm\vue;
+
+/**
+ * Commande personnalisée.
+ *
+ * Ce fichier va permettre de déclencher la (re)génération du fichier de configuration
+ * de la base de données telle que requise par la librairie jemdev\dbrm
+ *
+ * En lançant simplement en console la commande suivante :
+ * php bin/console app:dbrmconf
+ *
+ * @author JEM-Developpement Ltd
+ */
+class DbrmconfCommand extends Command
+{
+    protected static $defaultName = 'app:dbrmconf';
+    protected static $defaultDescription = 'Génération du fichier de configuration de la base de données';
+    protected static $dirconf;
+
+    protected function configure(): void
+    {
+        $this->setHelp('Cette commande permet de générer le fichier de configuration de la base de données pour le package jemdev\dbrm');
+        self::$dirconf = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR ."config". DIRECTORY_SEPARATOR ."packages". DIRECTORY_SEPARATOR ."dbrm". DIRECTORY_SEPARATOR;
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
+        include(self::$dirconf ."appConf.php");
+        $resetDbConf = $this->resetDbConf(DB_ROOT_USER, DB_ROOT_MDP);
+        $msg = (true == $resetDbConf)
+            ? "Terminé, le fichier a été correctement généré"
+            : "Terminé avec des erreurs !";
+        $io->success($msg);
+
+        return Command::SUCCESS;
+    }
+
+    public function resetDbConf($dbuser,$dbmdp)
+    {
+        include(self::$dirconf ."appConf.php");
+        // Création du fichier de configuration de la base.
+        $cible      = REP_ROOT . DIRECTORY_SEPARATOR ."config". DIRECTORY_SEPARATOR ."packages". DIRECTORY_SEPARATOR ."dbrm". DIRECTORY_SEPARATOR ."dbConf.php";
+        $oDbInit    = new genereconf(DB_APP_SCHEMA,DB_ROOT_USER,DB_ROOT_MDP,$dbuser,$dbmdp,DB_ROOT_TYPEDB,DB_ROOT_SERVER,DB_ROOT_DBPORT);
+        $aConfIS    = array(
+            'schema' => array(
+                'name'   => DB_ROOT_SCHEMA,
+                'SGBD'   => DB_ROOT_TYPEDB,
+                'server' => DB_ROOT_SERVER,
+                'port'   => DB_ROOT_DBPORT,
+                'user'   => DB_ROOT_USER,
+                'mdp'    => DB_ROOT_MDP,
+                'pilote' => DB_ROOT_TYPEDB
+            ),
+            'tables'     => array(),
+            'relations'  => array(),
+            'vues'       => array()
+        );
+        $oVue       = vue::getInstance($aConfIS);
+        $bGenConf   = $oDbInit->genererConf($oVue, $cible);
+        return $bGenConf;
+    }
+}
+
+```
+
+La méthode *DbrmconfCommand::execute* va lancer l'exécution de la méthode *DbrmconfCommand::resetDbConf* que nous avons ajoutée, et le fichier de configuration vu plus haut dbConf.php va être régénéré selon les informations collectées dans la base de données.
+
+Vérifions l'existence de cette nouvelle commande en demandant la liste des commandes existantes mais en limitant au namespace *app* :
+
+```
+$ php bin/console list app
+```
+
+Le résultat normal devrait comporter ceci :
+
+```
+. . . .
+
+Available commands for the "app" namespace:
+  app:dbrmconf  Génération du fichier de configuration de la base de données
+```
+
+Et nous voyons bien en bas notre nouvelle commande assortie du message informant de la nature de cette commande tel que nous l'avons défini dans notre nouvelle classe.
+
+Essayons ça :
+
+```
+$ php bin/console app:dbrmconf
+```
+
+Si tout s'est correctement déroulé, vous devriez voir ceci :
+
+```
+[OK] Terminé, le fichier a été correctement généré 
+```
+
+Tel que nous l'avons également défini dans notre classe de commande, dans la méthode *execute*.
+
+## Attention, jemdev\dbrm n'est PAS Doctrine
+
+Ce package ne remplacera jamais Doctrine, ce n'est pas un ORM. Il permet de collecter des données, de les modifier ou de les supprimer. Mais il ne permet pas de modifier la structure des données, ni de générer des formulaires pré-remplis et autres fonctionnalités exotiques du même genre.
+Il n'impose pas non plus de faire usage d'une sorte de langage bâtard entre le PHP et le SQL : si vous n'avez pas une maîtrise de base du langage SQL, alors gardez Doctrine.
+
 -----------------------------------
 # Conclusion
 Ce package se veut simple d'utilisation de façon à ne pas perdre le développeur dans les complications de l'implémentation, et ce sans avoir à se préoccuper du type de serveur de base de données utilisé, que ce soit MySQL/MariaDb, ou PostGreSQL.
