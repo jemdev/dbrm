@@ -6,23 +6,10 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit1c13fd46853e5947ce51a5dfc222db41
 {
-    public static $files = array (
-        'e88992873b7765f9b5710cab95ba5dd7' => __DIR__ . '/..' . '/hoa/consistency/Prelude.php',
-        '3e76f7f02b41af8cea96018933f6b7e3' => __DIR__ . '/..' . '/hoa/protocol/Wrapper.php',
-    );
-
     public static $prefixLengthsPsr4 = array (
         'j' => 
         array (
             'jemdev\\dbrm\\' => 12,
-        ),
-        'H' => 
-        array (
-            'Hoa\\Registry\\' => 13,
-            'Hoa\\Protocol\\' => 13,
-            'Hoa\\Exception\\' => 14,
-            'Hoa\\Event\\' => 10,
-            'Hoa\\Consistency\\' => 16,
         ),
     );
 
@@ -30,26 +17,6 @@ class ComposerStaticInit1c13fd46853e5947ce51a5dfc222db41
         'jemdev\\dbrm\\' => 
         array (
             0 => __DIR__ . '/../..' . '/',
-        ),
-        'Hoa\\Registry\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/hoa/registry',
-        ),
-        'Hoa\\Protocol\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/hoa/protocol',
-        ),
-        'Hoa\\Exception\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/hoa/exception',
-        ),
-        'Hoa\\Event\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/hoa/event',
-        ),
-        'Hoa\\Consistency\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/hoa/consistency',
         ),
     );
 

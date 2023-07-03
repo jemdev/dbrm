@@ -7,9 +7,4 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'jemdev\\dbrm\\' => array($baseDir . '/'),
-    'Hoa\\Registry\\' => array($vendorDir . '/hoa/registry'),
-    'Hoa\\Protocol\\' => array($vendorDir . '/hoa/protocol'),
-    'Hoa\\Exception\\' => array($vendorDir . '/hoa/exception'),
-    'Hoa\\Event\\' => array($vendorDir . '/hoa/event'),
-    'Hoa\\Consistency\\' => array($vendorDir . '/hoa/consistency'),
 );
