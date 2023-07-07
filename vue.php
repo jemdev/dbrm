@@ -335,4 +335,9 @@ class vue extends execute
     {
         // unset($this);
     }
+
+    public function __serialize(): array
+    {
+        return ['Instance of PDO'];
+    }
 }
