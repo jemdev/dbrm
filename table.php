@@ -1,5 +1,6 @@
 <?php
 namespace jemdev\dbrm;
+
 use jemdev\dbrm\ligneInstance;
 /**
  * @package     jemdev
@@ -29,7 +30,7 @@ class table
 {
     /**
      *
-     * @var jemdev\dbrm\ligneInstance
+     * @var ligneInstance
      */
     private $_oLigneInstance;
     public function __construct($_schema, $_sNomTable, $aConfig, $_aliasTable = null)
@@ -39,9 +40,9 @@ class table
 
     /**
      *
-     * @return jemdev\dbrm\ligneInstance
+     * @return ligneInstance
      */
-    public function getInstance()
+    public function getInstance(): ligneInstance
     {
         return $this->_oLigneInstance;
     }
