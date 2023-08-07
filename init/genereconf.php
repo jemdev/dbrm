@@ -897,7 +897,7 @@ CODE_PHP;
                     fclose($f);
                     /* 2 - Virer les retours de chariot et les espaces surnuméraires */
                     $masqueRetours = "#(?<!<\?php)\s+#im";
-                    $s2 = preg_replace($masqueRetours, "", $s1);
+                    $s2 = preg_replace($masqueRetours, " ", $s1);
                     /* 2 - Virer les virgules surnuméraires */
                     $masqueVirgules = "#,\)#im";
                     $s3 = preg_replace($masqueVirgules, ")", $s2);
