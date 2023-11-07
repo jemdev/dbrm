@@ -72,7 +72,7 @@ defined('TYPE_TINYTEXT')     || define('TYPE_TINYTEXT',     'TINYTEXT');
  * À noter également, la connexion utilise PDO et il n'y a aucun ajustement
  * particulier à ajouter selon le SGBD visé.
  *
- * @author      Jean Molliné
+ * @author      Jean Molliné <jmolline@jem-dev.com>
  * @package     jemdev
  * @subpackage  dbrm
  * @todo        Ajustement pour récupérer les informations dans Oracle et vérifier
@@ -134,6 +134,11 @@ class genereconf
      * @var jemdev\dbrm\selectTablesNames
      */
     private $_oSelectTablesName;
+    /**
+     * Erreurs d'exécution;
+     * @var array
+     */
+    private $_aErreurs = [];
 
     /**
      * Constructeur
@@ -150,16 +155,16 @@ class genereconf
      * @param String    $schemamdpdev   Mot de passe de l'utilisateur du schéma à décrire (mode développement)
      */
     public function __construct(
-        $schema,
-        $schemauser,
-        $schemamdp,
-        $rootuser         = 'root',
-        $rootmdp          = '',
-        $typeserveur      = 'mysql',
-        $host             = 'localhost',
-        $port             = null,
-        $schemauserdev    = null,
-        $schemamdpdev     = null
+        string $schema,
+        string $schemauser,
+        string $schemamdp,
+        string $rootuser         = 'root',
+        string $rootmdp          = '',
+        string $typeserveur      = 'mysql',
+        string $host             = 'localhost',
+        int $port                = null,
+        string $schemauserdev    = null,
+        string $schemamdpdev     = null
     )
     {
         $this->_user            = $rootuser;
@@ -178,11 +183,11 @@ class genereconf
     /**
      * Appel de génération du fichier de configuration
      *
-     * @param   jemdev\dbrm\dbVue   $oVue           Instance de la classe de vues.
-     * @param   String              $fichierCible   Chemin vers le fichier cible.
-     * @return  Boolean                             Indique la réussite ou l'échec de la procédure.
+     * @param   vue     $oVue           Instance de la classe de vues.
+     * @param   string  $fichierCible   Chemin vers le fichier cible.
+     * @return  bool                                Indique la réussite ou l'échec de la procédure.
      */
-    public function genererConf(vue $oVue, $fichierCible)
+    public function genererConf(vue $oVue, string $fichierCible): bool
     {
         switch ($this->_typeserveur)
         {
@@ -322,9 +327,7 @@ CODE_PHP;
                                     $aDetails['type'] == 'TYPE_TINYINT' ||
                                     $aDetails['type'] == 'TYPE_SMALLINT' ||
                                     $aDetails['type'] == 'TYPE_DECIMAL' ||
-                                    $aDetails['type'] == 'TYPE_FLOAT' ||
-                                    $v === null ||
-                                    $v == "NULL"
+                                    $aDetails['type'] == 'TYPE_FLOAT'
                                 )
                             ) || $d == 'vals') ? $v : "'". $v ."'";
                             $sFichier .= <<<CODE_PHP
@@ -460,9 +463,7 @@ CODE_PHP;
                                 $aDetails['type'] == 'TYPE_TINYINT' ||
                                 $aDetails['type'] == 'TYPE_SMALLINT' ||
                                 $aDetails['type'] == 'TYPE_DECIMAL' ||
-                                $aDetails['type'] == 'TYPE_FLOAT' ||
-                                $v === null ||
-                                $v == "NULL"
+                                $aDetails['type'] == 'TYPE_FLOAT'
                             ) || $d == 'vals') ? $v : "'". $v ."'";
                             $sFichier .= <<<CODE_PHP
                             '{$d}' => {$s},
@@ -569,9 +570,7 @@ CODE_PHP;
                                 $aDetails['type'] == 'TYPE_TINYINT' ||
                                 $aDetails['type'] == 'TYPE_SMALLINT' ||
                                 $aDetails['type'] == 'TYPE_DECIMAL' ||
-                                $aDetails['type'] == 'TYPE_FLOAT' ||
-                                $v === null ||
-                                $v == "NULL"
+                                $aDetails['type'] == 'TYPE_FLOAT'
                             ) || $d == 'vals') ? $v : "'". $v ."'";
                             $sFichier .= <<<CODE_PHP
                             '{$d}' => {$s},
@@ -649,9 +648,8 @@ CODE_PHP;
      * -2- Écrit le fichier de configuration vers $fichierCible;
      *
      */
-    private function _getConf()
+    private function _getConf(): mixed
     {
-        $retour = false;
         /**
          * On initialise le tableau de configuration.
          */
@@ -701,7 +699,7 @@ CODE_PHP;
     /**
      * Définition de la chaîne de connexion pour PDO.
      */
-    private function _setDns()
+    private function _setDns(): void
     {
         $this->_dns  = $this->_typeserveur;
         $this->_dns .= ':host=' . $this->_hote;
@@ -710,35 +708,14 @@ CODE_PHP;
     }
 
     /**
-     * Tentative d'établissement de la connexion
-     *
+     * @param array $aTables
+     * @param int $nt
+     * @param array $aConf
+     * @param string $section
+     * 
+     * @return mixed
      */
-    private function _connect()
-    {
-        try
-        {
-            $this->_dbh = new \PDO($this->_dns, $this->_user, $this->_mdp);
-        }
-        catch (\PDOException $p)
-        {
-            $this->_aErreurs[] = array(
-                'La connexion a échoué',
-                'Message : '. $p->getMessage(),
-                'Trace : '.$p->getTraceAsString()
-            );
-        }
-        catch (\Exception $e)
-        {
-            $this->_aErreurs[] = array(
-                'La connexion a échoué',
-                'Message : '. $e->getMessage(),
-                'Trace : '.$e->getTraceAsString()
-            );
-        }
-        $this->_connect();
-    }
-
-    private function _addInfosSection($aTables, $nt, $aConf, $section = 'tables')
+    private function _addInfosSection(array $aTables, int $nt, array $aConf, string $section = 'tables'): mixed
     {
         for($i = 0; $i < $nt; $i++)
         {
@@ -808,7 +785,7 @@ CODE_PHP;
         return $aConf;
     }
 
-    private function _addInfosColonnes($aConf, $table, $aInfosColonne, $section = 'tables')
+    private function _addInfosColonnes(array $aConf, string $table, array $aInfosColonne, string $section = 'tables'): array 
     {
         $col = $aInfosColonne['COLUMN_NAME'];
         $sType = ($aInfosColonne['DATA_TYPE'] == 'int')
@@ -861,25 +838,25 @@ CODE_PHP;
         return $aConf;
     }
 
-    private function _addPrimaryKeys($aConf, $table, $aPks, $section = 'tables')
+    private function _addPrimaryKeys(array $aConf, string $table, array $aPks, string $section = 'tables'): array
     {
         $aConf[$section][$table]['keys']['pk'] = $aPks;
         return $aConf;
     }
 
-    private function _addUniqueKeys($aConf, $table, $aUks, $section = 'tables')
+    private function _addUniqueKeys(array $aConf, string $table, array $aUks, string $section = 'tables'): array
     {
         $aConf[$section][$table]['keys']['uk'] = $aUks;
         return $aConf;
     }
 
-    private function _addForeignKeys($aConf, $table, $aFks, $section = 'tables')
+    private  function _addForeignKeys(array $aConf, string $table, array $aFks, string $section = 'tables'): array
     {
         $aConf[$section][$table]['keys']['fk'] = $aFks;
         return $aConf;
     }
 
-    private function _compacterDbConf($fichier)
+    private function _compacterDbConf(string $fichier): void
     {
         $repertoire = realpath(dirname($fichier)) . DIRECTORY_SEPARATOR;
         $fichier = $repertoire ."dbConf.php";

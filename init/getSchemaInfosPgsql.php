@@ -1,17 +1,17 @@
 <?php
 namespace jemdev\dbrm\init;
-use jemdev\dbrm\init\getSchemaInfos;
 use jemdev\dbrm\vue;
 use jemdev\dbrm\cache\selectTablesNames;
 
 /**
- * @author Cyrano
  * Classe de collecte d'informations sur un schéma de données
  *
  * Version MySQL qu collectera ces données dans le schéma INFORMATION_SCHEMA
  *
+ * @author      Jean Molliné <jmolline@jem-dev.com>
+ *
  */
-class getSchemaInfosPgsql implements getSchemaInfos
+class getSchemaInfosPgsql implements getSchemaInfosInterface
 {
     /**
      * Instance de la classe jemdev\dbrm\vue qui permettra d'Exécuter les requêtes
@@ -41,10 +41,10 @@ class getSchemaInfosPgsql implements getSchemaInfos
     }
 
     /**
-   *(non-PHPdoc)
-    * @see jemdev\dbrm\init\getSchemaInfos::_getInfosColonnes()
-*/
-    public function getInfosColonnes($table)
+       *(non-PHPdoc)
+      * @see jemdev\dbrm\init\getSchemaInfosInterface::_getInfosColonnes()
+         */
+    public function getInfosColonnes(string $table): array
     {
         $sql  = "SELECT". PHP_EOL .
                 "  cl.ordinal_position,". PHP_EOL .
@@ -122,10 +122,10 @@ class getSchemaInfosPgsql implements getSchemaInfos
     }
 
     /**
-   *(non-PHPdoc)
-    * @see jemdev\dbrm\init\getSchemaInfos::_getRelations()
-*/
-    public function getRelations()
+     * (non-PHPdoc)
+     * @see jemdev\dbrm\init\getSchemaInfosInterface::_getRelations()
+     */
+    public function getRelations(): array
     {
         $sql  = "SELECT tc.table_name". PHP_EOL .
                 "FROM ". $this->_metaschema .".table_constraints             tc". PHP_EOL .
@@ -152,10 +152,10 @@ class getSchemaInfosPgsql implements getSchemaInfos
     }
 
     /**
-   *(non-PHPdoc)
-    * @see jemdev\dbrm\init\getSchemaInfos::_getReferenceFK()
-*/
-    public function getReferenceFK($table, $colonne)
+     *(non-PHPdoc)
+     * @see jemdev\dbrm\init\getSchemaInfosInterface::_getReferenceFK()
+     */
+    public function getReferenceFK(string $table, string $colonne): array
     {
         $sql  = "SELECT". PHP_EOL .
                 "  cc.table_name         AS REFERENCED_TABLE_NAME,". PHP_EOL .
@@ -185,10 +185,10 @@ class getSchemaInfosPgsql implements getSchemaInfos
     }
 
     /**
-   *(non-PHPdoc)
-    * @see jemdev\dbrm\init\getSchemaInfos::_getConstraints()
-*/
-    public function getConstraints()
+     *(non-PHPdoc)
+     * @see jemdev\dbrm\init\getSchemaInfosInterface::_getConstraints()
+     */
+    public function getConstraints(): array
     {
         if(count($this->_aConstraint) == 0)
         {
@@ -222,10 +222,10 @@ class getSchemaInfosPgsql implements getSchemaInfos
     }
 
     /**
-   *(non-PHPdoc)
-    * @see jemdev\dbrm\init\getSchemaInfos::_getTables()
-*/
-    public function getTables()
+     * (non-PHPdoc)
+     * @see jemdev\dbrm\init\getSchemaInfosInterface::_getTables()
+     */
+    public function getTables(): array
     {
         $sql  = "SELECT tc.table_name". PHP_EOL .
                 "FROM ". $this->_metaschema .".table_constraints             tc". PHP_EOL .
@@ -253,9 +253,9 @@ class getSchemaInfosPgsql implements getSchemaInfos
 
     /**
      * (non-PHPdoc)
-     * @see jemdev\dbrm\init\getSchemaInfos::_getVues()
+     * @see jemdev\dbrm\init\getSchemaInfosInterface::_getVues()
      */
-    public function getVues()
+    public function getVues(): array
     {
         $sql  = "SELECT table_name". PHP_EOL .
                 "FROM ". $this->_metaschema .".views". PHP_EOL .
@@ -272,9 +272,9 @@ class getSchemaInfosPgsql implements getSchemaInfos
 
     /**
      *(non-PHPdoc)
-     * @see jemdev\dbrm\init\getSchemaInfos::_getReferencesFK()
+     * @see jemdev\dbrm\init\getSchemaInfosInterface::_getReferencesFK()
      */
-    public function getReferencesFK($table)
+    public function getReferencesFK($table): array
     {
         $sql  = "SELECT". PHP_EOL .
                 "  kc.column_name        AS COLUMN_NAME,". PHP_EOL .
@@ -303,7 +303,7 @@ class getSchemaInfosPgsql implements getSchemaInfos
         return $aRef;
     }
 
-    public function getViewTables($viewName)
+    public function getViewTables(string $viewName): array
     {
         $sql  = "SELECT ".
                 "  view_definition ".
@@ -330,7 +330,7 @@ class getSchemaInfosPgsql implements getSchemaInfos
         return($aVueDefinition);
     }
 
-    private function _getInfosSequence($table)
+    private function _getInfosSequence(string $table): array
     {
         $sql  = "SELECT sequence_name". PHP_EOL .
                 "  FROM information_schema.sequences". PHP_EOL .

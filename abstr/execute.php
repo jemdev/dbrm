@@ -2,7 +2,7 @@
 namespace jemdev\dbrm\abstr;
 use jemdev\dbrm\jemdevDbrmException;
 use jemdev\dbrm\cache\cache;
-use jemdev\dbrm\dev\timedebug;
+use jemdev\dbrm\Registre;
 /**
  * @package     jemdev
  *
@@ -28,7 +28,7 @@ defined('MEMCACHE_ACTIF')   || define('MEMCACHE_ACTIF', false);
 defined('MEMCACHE_SERVER')  || define('MEMCACHE_SERVER', 'localhost');
 defined('MEMCACHE_PORT')    || define('MEMCACHE_PORT',  11211);
 /**
- * Type de stockage du cache : file, memcache ou all.
+ * Type de stockage du cache : file, memcached ou all.
  * Attention, si on utilise uniquement memcache, les valeurs seront
  * effacées en cas de redémarrage du serveur.
  */
@@ -37,7 +37,7 @@ defined('CACHE_TYPE')       || define('CACHE_TYPE',     'file');
 /**
  * Classe abstraite d'exécution SQL
  *
- * @author      Jean Molliné
+ * @author      Jean Molliné <jmolline@jem-dev.com>
  * @package     jemdev
  * @subpackage  dbrm
  */
@@ -108,74 +108,104 @@ abstract class execute
      */
     private $_aListeVues = array();
 
-    private $_bModeDebug = false;
     /**
-     *
-     * @var timedebug
+     * @param array $dbConf
+     * @TODO remplacer Memcached
      */
-    protected $_oDebug;
-
-    protected function __construct($dbConf)
+    protected function __construct(array $dbConf)
     {
         $this->_aConfig = $dbConf;
         if(true === DBCACHE_ACTIF && false !== $this->_bCacheResultat)
         {
-            $this->_aListeVues = array();
-            foreach($this->_aConfig['vues'] as $vue => $infos)
+            if(defined('DB_CACHE') && file_exists(DB_CACHE))
             {
-                $this->_aListeVues[$vue] = $infos['tables'];
-            }
-            $this->_oCache = new cache(DB_CACHE, VALIDE_DBCACHE, INFOS_DBCACHE, $this->_aListeVues);
-            if(true == MEMCACHE_ACTIF)
-            {
-                if(false === $oMemcache)
+                $this->_aListeVues = array();
+                foreach($this->_aConfig['vues'] as $vue => $infos)
                 {
-                    $oMemcache = new \Memcache;
+                    $this->_aListeVues[$vue] = $infos['tables'];
                 }
-                $this->_oCache->activerMemcache($oMemcache, MEMCACHE_SERVER, MEMCACHE_PORT);
+                $this->_oCache = new cache(DB_CACHE, VALIDE_DBCACHE, INFOS_DBCACHE, $this->_aListeVues);
+                $cleMemcached = $this->_oCache->getCleRegistreMemcached();
+                $oMemcached = Registre::isRegistered($cleMemcached) ? Registre::get($cleMemcached) : false;
+                if(true == MEMCACHE_ACTIF)
+                {
+                    if(false === $oMemcached && class_exists('Memcached', true))
+                    {
+                        $oMemcached = new \Memcached;
+                        Registre::set($cleMemcached, $oMemcached);
+                    }
+                    $this->_oCache->activerMemcache($oMemcached, MEMCACHE_SERVER, MEMCACHE_PORT);
+                }
+                $this->_bCacheRequetes = true;
             }
-            $this->_bCacheRequetes = true;
+            else
+            {
+                $this->_bCacheRequetes = false;
+                throw new jemdevDbrmException("La constante de configuration « DB_CACHE » indiquant le chemin vers le répertoire de mise en cache n'a pas été défini.", E_USER_ERROR);
+            }
         }
     }
 
-    protected function _connect($aInfosCnx)
+    /**
+     * Établissement de la connexion au SGBD
+     * 
+     * @param array $aInfosCnx
+     * 
+     * @return void
+     */
+    protected function _connect(array $aInfosCnx): void
     {
-        $dns  = $aInfosCnx['pilote'];
-        $dns .= ':host=' . $aInfosCnx['server'];
-        $dns .= ((!empty($aInfosCnx['port'])) ? (';port=' . $aInfosCnx['port']) : '');
-        $dns .= ';dbname=' . $aInfosCnx['name'];
-        $options = ($aInfosCnx['pilote'] == 'mysql') ? array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8;') : null;
-        try
+        if(false === (Registre::isRegistered('dbCnx')))
         {
-            $this->_dbh = new \PDO($dns, $aInfosCnx['user'], $aInfosCnx['mdp'], $options);
-            $this->_dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $dns  = $aInfosCnx['pilote'];
+            $dns .= ':host=' . $aInfosCnx['server'];
+            $dns .= ((!empty($aInfosCnx['port'])) ? (';port=' . $aInfosCnx['port']) : '');
+            $dns .= ';dbname=' . $aInfosCnx['name'];
+            $options = ($aInfosCnx['pilote'] == 'mysql') ? array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8;') : null;
+            try
+            {
+                $this->_dbh = new \PDO($dns, $aInfosCnx['user'], $aInfosCnx['mdp'], $options);
+                Registre::set('dbCnx', $this->_dbh);
+                $this->_dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+                $this->_bConnecte = true;
+            }
+            catch (\PDOException $p)
+            {
+                $this->_bConnecte = false;
+                $this->_aDbErreurs[] = array(
+                    'La connexion a échoué',
+                    'Message : '. $p->getMessage(),
+                    'Trace : '. $p->getTraceAsString()
+                );
+            }
+            catch (jemdevDbrmException $e)
+            {
+                $this->_bConnecte = false;
+                $this->_aDbErreurs[] = array(
+                    'La connexion a échoué',
+                    'Message : '. $e->getMessage(),
+                    'Trace : '. $e->getTraceAsString()
+                );
+            }
+        }
+        else
+        {
+            $this->_dbh = Registre::get('dbCnx');
             $this->_bConnecte = true;
         }
-        catch (\PDOException $p)
-        {
-            $this->_bConnecte = false;
-            $this->_aDbErreurs[] = array(
-                'La connexion a échoué',
-                'Message : '. $p->getMessage(),
-                'Trace : '. $p->getTraceAsString()
-            );
-        }
-        catch (jemdevDbrmException $e)
-        {
-            $this->_bConnecte = false;
-            $this->_aDbErreurs[] = array(
-                'La connexion a échoué',
-                'Message : '. $e->getMessage(),
-                'Trace : '. $e->getTraceAsString()
-            );
-        }
     }
 
-    protected function _fetchDatas($sql, $params = null, $out = 'array')
+    /**
+     * @param string        $sql
+     * @param array|null    $params
+     * @param string        $out
+     * 
+     * @return mixed
+     */
+    protected function _fetchDatas(string $sql, array $params = null, string $out = 'array'): mixed
     {
         try
         {
-            $t1 = microtime(true);
             $cache = false;
             $select = "#^SELECT\s.*#";
             $requete = $sql;
@@ -235,11 +265,6 @@ abstract class execute
             {
                 $result = $cache;
             }
-            $t2 = microtime(true);
-            if(true === $this->_bModeDebug)
-            {
-                $this->_oDebug->verifTime($t1, $t2, $sql, $params);
-            }
         }
         catch (\PDOException $e)
         {
@@ -248,43 +273,84 @@ abstract class execute
         return $result;
     }
 
-    protected function _fetchAssoc($sql, $params)
+    /**
+     * @param string $sql
+     * @param array $params
+     * 
+     * @return array
+     */
+    protected function _fetchAssoc(string $sql, array $params): array
     {
         $result = $this->_fetchDatas($sql, $params, 'assoc');
         return $result;
     }
 
-    protected function _fetchNum($sql, $params)
+    /**
+     * @param string $sql
+     * @param array $params
+     * 
+     * @return array
+     */
+    protected function _fetchNum(string $sql, array $params): array
     {
         $result = $this->_fetchDatas($sql, $params, 'num');
         return $result;
     }
 
-    protected function _fetchObject($sql, $params)
+    /**
+     * @param string $sql
+     * @param array $params
+     * 
+     * @return object
+     */
+    protected function _fetchObject(string $sql, array $params): object
     {
         $result = $this->_fetchDatas($sql, $params, 'object');
         return $result;
     }
 
-    protected function _fetchOne($sql, $params)
+    /**
+     * @param string $sql
+     * @param array $params
+     * 
+     * @return mixed
+     */
+    protected function _fetchOne(string $sql, array $params): mixed
     {
         $result = $this->_fetchDatas($sql, $params, 'one');
         return $result;
     }
 
-    protected function _fetchArray($sql, $params)
+    /**
+     * @param string $sql
+     * @param array $params
+     * 
+     * @return array
+     */
+    protected function _fetchArray(string $sql, array $params): array
     {
         $result = $this->_fetchDatas($sql, $params, 'array');
         return $result;
     }
 
-    protected function _fetchLine($sql, $params)
+    /**
+     * @param string $sql
+     * @param array $params
+     * 
+     * @return array
+     */
+    protected function _fetchLine(string $sql, array $params): array
     {
         $result = $this->_fetchDatas($sql, $params, 'line');
         return $result;
     }
 
-    protected function _getLastId($col = null)
+    /**
+     * @param string|null $col
+     * 
+     * @return int
+     */
+    protected function _getLastId(string $col = null): int
     {
         try
         {
@@ -296,13 +362,8 @@ abstract class execute
         }
         return $result;
     }
-    /*
-    protected function _getAffectedRows()
-    {
-        $result = $this->_dbh->affectedRows();
-    }
-    */
-    protected function _execProc($sql, $params)
+
+    protected function _execProc(string $sql, array $params): mixed
     {
         $result = false;
         $p = is_array($params) ? $params : array();
@@ -315,10 +376,6 @@ abstract class execute
                 {
                     foreach($p as $key => $val)
                     {
-                        if($val == "NULL")
-                        {
-                            $val = null;
-                        }
                         $typeData = $this->_getPDOConstantType($val);
                         $sth->bindValue($key, $val, $typeData);
                     }
@@ -379,8 +436,9 @@ abstract class execute
     /**
      * Démarre une transaction.
      *
+     * @return bool
      */
-    protected function _debutTransaction()
+    protected function _debutTransaction(): bool
     {
         $retour = false;
         if(is_null($this->_dbh))
@@ -422,8 +480,9 @@ abstract class execute
     /**
      * Annule une transaction.
      *
+     * @return bool
      */
-    protected function _annuleTransaction()
+    protected function _annuleTransaction(): bool
     {
         try
         {
@@ -463,8 +522,9 @@ abstract class execute
     /**
      * Confirme et exécute une transaction.
      *
+     * @return bool
      */
-    protected function _confirmeTransaction()
+    protected function _confirmeTransaction(): bool
     {
         $retour = false;
         try
@@ -528,10 +588,10 @@ abstract class execute
      * Le SGBD le lira plus vite en ayant pas à parser des caractères inutiles, d'autant moins si la
      * requête est longue et complexe..
      *
-     * @param String $sql
-     * @return String
+     * @param  string $sql
+     * @return string
      */
-    public function _optimiseSqlString($sql)
+    public function _optimiseSqlString(string $sql): string
     {
         $rc = "#(\r|\n|\r\n|". PHP_EOL .")#";
         $espaces = "#\s+#";
@@ -569,7 +629,7 @@ abstract class execute
      * @param  String $value
      * @return number
      */
-    private function _getPDOConstantType($value = null)
+    private function _getPDOConstantType(string $value = null): int
     {
         if(is_null($value) || empty($value))
         {
@@ -595,44 +655,5 @@ abstract class execute
             $type = \PDO::PARAM_STR;
         }
         return($type);
-    }
-
-    /**
-     * Activation du mode de débogage des requêtes SQL pour journaliser les requêtes lentes.
-     *
-     * @param string    $type       Type de journalisation, php (par défaut), fichier ou courriel.
-     * @param integer   $maxtime    Durée minimum (défaut 5) à partir de laquelle on journalise la requête
-     * @param string    $fichier    Chemin absolu vers le fichier journal si mode « fichier » sélectionné.
-     * @param string    $courriel   Adresse de courriel des messages si mode « courriel » sélectionné
-     */
-    public function activerModeDebug($type=null, $maxtime=null, $fichier = null, $courriel = null)
-    {
-        if(is_null($type))
-        {
-            $type = 'php';
-        }
-        if(is_null($maxtime))
-        {
-            $maxtime = 5;
-        }
-        if(!is_null($fichier))
-        {
-            if(!file_exists($fichier))
-            {
-                if(false != ($f = fopen($fichier, 'a+')))
-                {
-                    fclose($f);
-                }
-                else
-                {
-                    throw new \Exception("Ouverture du fichier ". $fichier ." impossible. Vérifiez les droits d'accès.");
-                }
-            }
-            elseif(!is_writable($fichier))
-            {
-                throw new \Exception("Accès au fichier ". $fichier ." impossible en écriture. Vérifiez les droits d'accès.");
-            }
-        }
-        $this->_oDebug = new timedebug($type, $maxtime, $fichier, $courriel);
     }
 }

@@ -26,7 +26,7 @@ namespace jemdev\dbrm\cache;
  * usage avec d'autres requêtes si nécessaire. Cette méthode est automatiquement
  * utilisée lorsqu'on appelle getTables().
  *
- * @author      Jean Molliné <jmolline@gmail.com>
+ * @author      Jean Molliné <jmolline@jem-dev.com>
  * @since       PHP 5.x.x
  * @package     jemdev
  * @subpackage  dbrm
@@ -43,9 +43,12 @@ class selectTablesNames
      * Le paramètre est facultatif. On peut l'utiliser lorsqu'on a juste une
      * seule requête à analyser, auquel cas, on peut tout de suite après appeler
      * la méthode getTables.
-     * @param    String    $query Requête SQL SELECT (optionnel)
+     * 
+     * @param string|null $query Requête SQL SELECT (optionnel)
+     * 
+     * @return [type]
      */
-    public function _construct($query = null)
+    public function _construct(string $query = null)
     {
         if(!is_null($query))
         {
@@ -61,7 +64,7 @@ class selectTablesNames
      * mots-clés habituellement utilisés sont remplacés par un
      * « INNER JOIN ».
      */
-    private function _init($query)
+    private function _init(string $query): void
     {
         $this->_query = preg_replace("#(?<!CROSS\s|LEFT\s|RIGHT\s|INNER\s|OUTER\s|NATURAL)JOIN#i", "INNER JOIN", $query);
         self::$_hash = md5($query);
@@ -74,7 +77,7 @@ class selectTablesNames
      * Cette méthode va terminer le travail et stocker la liste des tables
      * dans la propriété de stockage self::$_aSqlQueries.
      */
-    private static function _blocTablesSplit($captures)
+    private static function _blocTablesSplit(array $captures): void
     {
         preg_match_all('#(?:^|,\s)+(?:\(*`?\w+`?\.)?`?(\w+)`?#', $captures[1], $tableGroup);
         foreach($tableGroup[1] as $table )
@@ -88,7 +91,7 @@ class selectTablesNames
      * La méthode va isoler certains blocs dans la requête et appeler
      * une méthode de callback _blocTablesSplit()
      */
-    private function _parseQuery()
+    private function _parseQuery(): void
     {
         $masque = '#\s*(?:FROM|JOIN)\s+(.+?)\s?(?:ON(?:\s|\()|CROSS\s|LEFT\s|RIGHT\s|INNER\s|OUTER\s|NATURAL\s|JOIN\s|USING\s|GROUP\s|HAVING\s|WHERE|ORDER\s|LIMIT\s|\z)#im';
         preg_replace_callback($masque, "self::_blocTablesSplit", $this->_query);
@@ -98,7 +101,7 @@ class selectTablesNames
      * Ajouter une autre requête SELECT à la collection.
      * @param    String    $query Requête SQL SELECT
      */
-    public function setNewQuery($query)
+    public function setNewQuery(string $query): void
     {
         $this->_init($query);
     }
@@ -121,7 +124,7 @@ class selectTablesNames
      *
      * @param    Boolean $tablesOnly Ne récupérer QUE les tables (true) ou toutes les informations (false, valeur par défaut)
      */
-    public function getTables($tablesOnly = false)
+    public function getTables(bool $tablesOnly = false): array
     {
         $aResult = array();
         foreach(self::$_aSqlQueries AS $hash => $infos)
@@ -145,7 +148,7 @@ class selectTablesNames
     /**
      * Remise à vide des propriétés de l'instance.
      */
-    public function reset()
+    public function reset(): void
     {
         $this->_query       = null;
         self::$_hash        = null;

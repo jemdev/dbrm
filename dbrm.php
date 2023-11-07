@@ -1,17 +1,17 @@
 <?php
 namespace jemdev\dbrm;
-use jemdev\dbrm\jemdevDbrmException;
-use jemdev\dbrm\vue;
+
 use jemdev\dbrm\table;
 use jemdev\dbrm\init\genereconf;
+
 /**
  * DataBase Relational Mapping class.
  *
  * Classe principale du package permettant de récupérer une instance de connexion ainsi
  * que des instances nécessaires pour toutes les opération SQL.
  *
- * @author Cyrano
- * @version     2.0 Ré-écriture du package intégrant les NAMESPACES
+ * @author      Jean Molliné <jmolline@jem-dev.com.com>
+ * @version     2.1 Ré-écriture du package pour PHP 8.*
  *
  */
 class dbrm
@@ -39,7 +39,7 @@ class dbrm
      * Note importante : il faut interprêter le mot « vue » au sens SQL du terme et non
      * par rapport à une méthode d'affichage quelconque.
      *
-     * @var jemdev\dbrm\vue
+     * @var vue
      */
     private $_oVue;
 
@@ -53,7 +53,7 @@ class dbrm
      * @param   string  $type       Type de SGBDR, Ex. « mysql »
      * @param   string  $port       Port sur lequel doit être effectuée la connexion, Ex. « 3306 »
      */
-    public function __construct($server, $schema, $user, $mdp, $type = 'mysql', $port = '3306')
+    public function __construct(string $server, string $schema, string $user, string $mdp, string $type = 'mysql', string $port = '3306')
     {
         $this->_server  = $server;
         $this->_schema  = $schema;
@@ -70,7 +70,7 @@ class dbrm
      * @param   string  $nomTable
      * @return  jemdev\dbrm\ligneInstance ou FALSE si le fichier de configuration n'est pas défini.
      */
-    public function getLigneInstance($nomTable)
+    public function getLigneInstance(string $nomTable): ligneInstance|false
     {
         /**
          * Chargement du système d'accès aux données et aux objets.
@@ -91,9 +91,9 @@ class dbrm
     /**
      * Récupération de l'instance d'accès aux données.
      *
-     * @return jemdev\dbrm\vue
+     * @return vue
      */
-    public function getVueInstance()
+    public function getVueInstance(): vue
     {
         if(is_null($this->_oVue))
         {
@@ -107,12 +107,13 @@ class dbrm
      * @param   string  $cheminRepertoireConf   Chemin absolu vers le répertoire où sera stocké le ficher de configuration
      * @return  boolean
      */
-    public function resetDbConf($cheminRepertoireConf)
+    public function resetDbConf(string $cheminRepertoireConf): bool
     {
         if(is_null($this->_oVue))
         {
             $this->getVueInstance();
         }
+        $this->setCheminFichierConf($cheminRepertoireConf);
         $oConfGenerator = new genereconf($this->_schema, $this->_user, $this->_mdp, $this->_user, $this->_mdp, $this->_type, $this->_server, $this->_port);
         $bSetConf = $oConfGenerator->genererConf($this->_oVue, $this->_cheminFichierDbConf);
         return($bSetConf);
@@ -124,10 +125,10 @@ class dbrm
      * Si le répertoire n'existe pas, une exception sera levée.
      * Si le fichier n'existe pas, il sera créé.
      *
-     * @param unknown $cheminRepertoireConf
-     * @throws jemdev\dbrm\jemdevDbrmException
+     * @param  string $cheminRepertoireConf
+     * @throws jemdevDbrmException
      */
-    public function setCheminFichierConf($cheminRepertoireConf)
+    public function setCheminFichierConf(string $cheminRepertoireConf): void
     {
         $cheminRep = preg_replace("#/#", DIRECTORY_SEPARATOR, $cheminRepertoireConf);
         $this->_cheminRepertoireDbConf = rtrim($cheminRep, DIRECTORY_SEPARATOR);
@@ -153,9 +154,9 @@ class dbrm
                         'mdp'    => $this->_mdp,
                         'pilote' => $this->_type
                     ),
-                    'tables' => array(),
-                    'relations' => array(),
-                    'vues' => array()
+                    'tables' => [],
+                    'relations' => [],
+                    'vues' => []
                 )
             );
             $this->_oVue = $this->getVueInstance();
@@ -168,7 +169,7 @@ class dbrm
         }
     }
 
-    public function startTransaction()
+    public function startTransaction(): void
     {
         if(is_null($this->_oVue))
         {
@@ -176,7 +177,8 @@ class dbrm
         }
         $this->_oVue->startTransaction();
     }
-    public function finishTransaction($bOk)
+
+    public function finishTransaction($bOk): void
     {
         if(is_null($this->_oVue))
         {

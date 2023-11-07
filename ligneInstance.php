@@ -1,5 +1,6 @@
 <?php
 namespace jemdev\dbrm;
+
 use jemdev\dbrm\jemdevDbrmException;
 use jemdev\dbrm\abstr\execute;
 use jemdev\dbrm\cache\cache;
@@ -15,7 +16,7 @@ use jemdev\dbrm\cache\cache;
  * précisant un alias différent pour chaque occurence de la table.
  *
  * Créé le 01/05/2008
- * @author      Jean Molliné <jmolline@gmail.com>
+ * @author      Jean Molliné <jmolline@jem-dev.com>
  * @since       PHP 5.4.x
  * @package     jemdev
  * @subpackage  dbrm
@@ -75,21 +76,21 @@ class ligneInstance extends execute
      *
      * @var Array
      */
-    private $_aColonnes = array ();
+    private $_aColonnes = [];
 
     /**
      * Liste des noms des colonnes de la table.
      *
      * @var Array
      */
-    private $_aCles = array();
+    private $_aCles = [];
 
     /**
      * Liste des colonnes composant la clé primaire.
      *
      * @var Array
      */
-    private $_aPk = array();
+    private $_aPk = [];
 
     /**
      * Blocage sur l'initialisation de valeurs sur les clés primaires.
@@ -126,6 +127,13 @@ class ligneInstance extends execute
      */
     private $_wr = false;
 
+    /**
+     * Instance de la classe utilitaire de débogage.
+     *
+     * @var Object
+     */
+    private $_oDebug;
+
     private $_bNewLine = false;
 
     /**
@@ -135,16 +143,25 @@ class ligneInstance extends execute
      * multiton, la propriété dbTable::_aInstances contenant
      * tous les objets instanciés via cette classe.
      *
-     * @param   String $_schema          Nom du schéma de données sur lequel seront collectées les informations
-     * @param   String $_sNomTable       Nom de la table
-     * @param   String $aConfig          Tableau où sont enregistrés les paramètres des tables.
-     * @param   String $_aliasTable      Alias du nom de table
+     * @param   string $_schema          Nom du schéma de données sur lequel seront collectées les informations
+     * @param   string $_sNomTable       Nom de la table
+     * @param   array  $aConfig          Tableau où sont enregistrés les paramètres des schémas de données.
+     * @param   string $_aliasTable      Alias du nom de table
      * @throws  jemdevDbrmException
      *
-     * @todo    Comment intégrer les fonctions et autres procédures stockées...?
+     * @TODO    Comment intégrer les fonctions et autres procédures stockées...?
      */
-    protected function __construct($_schema, $_sNomTable, $aConfig, $_aliasTable)
+    protected function __construct(string $_schema, string $_sNomTable, array $aConfig, string $_aliasTable)
     {
+        foreach($aConfig as $c => $schema)
+        {
+            if($schema['schema']['name'] == $_schema)
+            {
+                $this->_aConfig = $aConfig[$c];
+                $aConfig = $aConfig[$c];
+                break;
+            }
+        }
         parent::__construct($aConfig);
         $this->_aConfigSchema = $aConfig;
         $this->_sNomTable     = $_sNomTable;
@@ -233,9 +250,9 @@ class ligneInstance extends execute
      * @param   String  $_sNomTable     Nom de la table à utiliser
      * @param   Array   $aConfig        Description des schémas
      * @param   String  $_aliasTable    Alias de la table (optionnel)
-     * @return  Object
+     * @return  ligneInstance
      */
-    static public function getInstance($_schema, $_sNomTable, $aConfig, $_aliasTable = null)
+    static public function getInstance($_schema, $_sNomTable, $aConfig, $_aliasTable = null): ligneInstance
     {
         if (!isset($_aliasTable))
         {
@@ -326,7 +343,7 @@ class ligneInstance extends execute
             }
             else
             {
-                $valeur = (!empty($valeur)) ? trim($valeur) : '';
+                $valeur = trim($valeur);
                 $typeData = 'null';
                 try
                 {
@@ -399,7 +416,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,63) && $valeur < pow(2,63)))
                                 )
                                 {
-                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,63) .", maximum ". (pow(2,63)-1) .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,63) .", maximum ". pow(2,63)-1 .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -408,7 +425,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,31) && $valeur < pow(2,31)))
                                 )
                                 {
-                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,31) .", maximum ". (pow(2,31)-1) .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,31) .", maximum ". pow(2,31)-1 .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -417,7 +434,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,23) && $valeur < pow(2,23)))
                                 )
                                 {
-                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,23) .", maximum ". (pow(2,23)-1) .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,23) .", maximum ". pow(2,23)-1 .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -426,7 +443,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,15) && $valeur < pow(2,15)))
                                 )
                                 {
-                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,15) .", maximum ". (pow(2,15)-1) .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,15) .", maximum ". pow(2,15)-1 .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -435,7 +452,7 @@ class ligneInstance extends execute
                                     (false === ($valeur >= pow(-2,7) && $valeur < pow(2,7)))
                                 )
                                 {
-                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,7) .", maximum ". (pow(2,7)-1) .")", E_USER_WARNING);
+                                    throw new jemdevDbrmException("La valeur reçue pour la colonne ". $colonne ." dépasse les limites permises (reçu «". $valeur ."», minimum autorisé ". pow(-2,7) .", maximum ". pow(2,7)-1 .")", E_USER_WARNING);
                                 }
                                 $typeData = 'int';
                                 break;
@@ -517,7 +534,7 @@ class ligneInstance extends execute
      *
      * @param Array $aPk
      */
-    public function init($aPk = null)
+    public function init($aPk = null): void
     {
         $bPkNull = true;
         if(!is_null($aPk) && is_array($aPk))
@@ -590,7 +607,7 @@ class ligneInstance extends execute
      * @param   Array $aPk
      * @return  Array
      */
-    private function _getLigneTable($aPk)
+    private function _getLigneTable($aPk): array
     {
         $result = false;
         if(!is_null($aPk))
@@ -599,8 +616,8 @@ class ligneInstance extends execute
             $sql .= implode(", ", $this->_aCles) ." ";
             $sql .= "FROM ". $this->_sNomTable ." ";
             $sql .= "WHERE ";
-            $aWhere = array();
-            $in     = array();
+            $aWhere = [];
+            $in     = [];
             if(is_array($aPk))
             {
                 foreach ($aPk as $pk => $val)
@@ -630,14 +647,14 @@ class ligneInstance extends execute
      *
      * @return Bool
      */
-    public function supprimer()
+    public function supprimer(): bool
     {
         // code de suppression de données.
         $retour = false;
         if(count($this->_aPk) > 0)
         {
-            $aWhere = array();
-            $params = array();
+            $aWhere = [];
+            $params = [];
             foreach ($this->_aPk as $cle)
             {
                 $aWhere[] = $cle .' = :p_'. $cle;
@@ -672,23 +689,13 @@ class ligneInstance extends execute
      * d'une mise à jour : selon qu'on a un identifiant ou non, on appellera
      * l'une des méthodes privées dbTable::inserer() ou dbTable::mettreajour()
      *
-     * @return Boolean
+     * @return bool
      */
-    public function sauvegarder()
+    public function sauvegarder(): bool
     {
-        /*
-         * temporaire
-         * en mode développement, va retourner systématiquement true
-         * sans enregistrer quoique ce soit et éviter de pourrir la
-         * base de données.
-         */
-        if(defined('DEV_LOCK') && DEV_LOCK === true)
-        {
-            return(true);
-        }
-        $aCols   = array();
-        $aParams = array();
-        $in      = array();
+        $aCols   = [];
+        $aParams = [];
+        $in      = [];
         /**
          * Validation de la présence des données obligatoires.
          */
@@ -765,7 +772,7 @@ class ligneInstance extends execute
     /**
      * Démarrage d'une transaction SQL
      */
-    public function transactionDebut()
+    public function transactionDebut(): bool
     {
         $debut = $this->_debutTransaction();
         if(false === $debut)
@@ -783,7 +790,7 @@ class ligneInstance extends execute
      *
      * @param Boolean $ok
      */
-    public function transactionFin($ok = true)
+    public function transactionFin(bool $ok = true): bool|array
     {
         if(true === $ok)
         {
@@ -807,7 +814,7 @@ class ligneInstance extends execute
      * @param   array   $in         Liste des valeurs des paramètres
      * @return  boolean             Retourne true si l'insertion s'est correctement déroulée.
      */
-    private function _inserer($aCols, $aParams, $in)
+    private function _inserer($aCols, $aParams, $in): bool
     {
         /* Code d'ajout de données dans la base */
         $sql = "INSERT INTO ". $this->_sNomTable ."(";
@@ -836,10 +843,10 @@ class ligneInstance extends execute
         return $retour;
     }
 
-    private function _mettreajour($aCols, $aParams, $in)
+    private function _mettreajour($aCols, $aParams, $in): bool
     {
         // Code de mise à jour d'une ligne de données
-        $aSet = array();
+        $aSet = [];
         foreach($aCols as $i => $col)
         {
             if(!in_array($col, $this->_aPk))
@@ -847,7 +854,7 @@ class ligneInstance extends execute
                 $aSet[] = $col ." = ". $aParams[$i];
             }
         }
-        $aWhere = array();
+        $aWhere = [];
         foreach($this->_aPk as $pk)
         {
             $aWhere[] = $pk ." = :p_". $pk;
@@ -868,7 +875,7 @@ class ligneInstance extends execute
         $sql = "DESCRIBE " . $this->_sNomTable;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $sRetour = <<<PLAIN_TEXT
 Informations sur l'instance :
@@ -896,14 +903,14 @@ PLAIN_TEXT;
      * @param   Array   $aTraces
      * @return  String
      */
-    private function _setTraceMessage($aTraces)
+    private function _setTraceMessage($aTraces): string
     {
         $msg = null;
         /**
          * On commence par isoler les traces contenant un chemin de fichier et
          * un numéro de ligne
          */
-        $aTrace = array();
+        $aTrace = [];
         foreach ($aTraces as $t)
         {
             if(isset($t['file']) && isset($t['line']))
@@ -925,8 +932,13 @@ PLAIN_TEXT;
         return $msg;
     }
 
-    public function getErreurs()
+    /**
+     * Retourne les erreurs d'exécution qui ont pu être relevées.
+     * @return array
+     */
+    public function getErreurs(): array
     {
-        return $this->_aDbErreurs;
+        $retour = (!empty($this->_aDbErreurs)) ? $this->_aDbErreurs : [];
+        return $retour;
     }
 }

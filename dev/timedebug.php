@@ -8,7 +8,7 @@ namespace jemdev\dbrm\dev;
  * duquel une requête sera enregistrée dans un journal d'exécution de façon à
  * ce qu'on puisse l'isoler et l'optimiser.
  *
- * @author jem-dev
+ * @author      Jean Molliné <jmolline@jem-dev.com>
  */
 class timedebug
 {
@@ -64,12 +64,12 @@ class timedebug
     /**
      * Constructeur
      * @param   string  $type
-     * @param   number  $maxtime
+     * @param   int     $maxtime
      * @param   string  $fichier
      * @param   string  $courriel
      * @throws \InvalidArgumentException
      */
-    public function __construct($type='php', $maxtime=5, $fichier = null, $courriel = null)
+    public function __construct(string $type='php', int $maxtime=5, string $fichier = null, string $courriel = null)
     {
         if(array_key_exists($type, static::$_types))
         {
@@ -213,7 +213,7 @@ class timedebug
         return $this;
     }
 
-    public function verifTime(float $t1, float $t2, string $sql, $params):void
+    public function verifTime(float $t1, float $t2, string $sql, ?array $params = null):void
     {
         $duree = $t2 - $t1;
         if($duree >= $this->_maxtime)
@@ -230,7 +230,14 @@ class timedebug
         }
     }
 
-    private function _enregistrerEvemenent(float $duree, string $sql, array $params)
+    /**
+     * @param float $duree
+     * @param string $sql
+     * @param array $params
+     * 
+     * @return bool
+     */
+    private function _enregistrerEvemenent(float $duree, string $sql, array $params): bool
     {
         $message = "Durée d'exécution de la requête supérieure au maximum défini de ". $this->_maxtime ." secondes :". PHP_EOL;
         $message .= "\t# Durée : ". $duree ." secondes;". PHP_EOL;

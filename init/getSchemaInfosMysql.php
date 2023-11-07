@@ -1,17 +1,17 @@
 <?php
 namespace jemdev\dbrm\init;
-use jemdev\dbrm\init\getSchemaInfos;
 use jemdev\dbrm\vue;
 use jemdev\dbrm\cache\selectTablesNames;
 
 /**
- * @author Cyrano
  * Classe de collecte d'informations sur un schéma de données
  *
  * Version MySQL qu collectera ces données dans le schéma INFORMATION_SCHEMA
  *
+ * @author      Jean Molliné <jmolline@jem-dev.com>
+ *
  */
-class getSchemaInfosMysql implements getSchemaInfos
+class getSchemaInfosMysql implements getSchemaInfosInterface
 {
     /**
      * Instance de la classe jemdev\dbrm\vue qui permettra d'Exécuter les requêtes
@@ -39,10 +39,10 @@ class getSchemaInfosMysql implements getSchemaInfos
     }
 
     /**
-   *(non-PHPdoc)
-    * @see jemdev\dbrm\init\getSchemaInfos::_getInfosColonnes()
-*/
-    public function getInfosColonnes($table)
+     *(non-PHPdoc)
+     * @see jemdev\dbrm\init\getSchemaInfosInterface::_getInfosColonnes()
+     */
+    public function getInfosColonnes(string $table): array
     {
         $sql  = "SELECT ".
                 "  `COLUMN_NAME`, ".
@@ -72,10 +72,10 @@ class getSchemaInfosMysql implements getSchemaInfos
     }
 
     /**
-   *(non-PHPdoc)
-    * @see jemdev\dbrm\init\getSchemaInfos::_getRelations()
-*/
-    public function getRelations()
+     *(non-PHPdoc)
+     * @see jemdev\dbrm\init\getSchemaInfosInterface::_getRelations()
+     */
+    public function getRelations(): array
     {
         $sql  = "SELECT DISTINCT(c.TABLE_NAME) ".
                 "FROM ". $this->_metaschema .".COLUMNS c ".
@@ -93,10 +93,10 @@ class getSchemaInfosMysql implements getSchemaInfos
     }
 
     /**
-   *(non-PHPdoc)
-    * @see jemdev\dbrm\init\getSchemaInfos::_getReferenceFK()
-*/
-    public function getReferenceFK($table, $colonne)
+     *(non-PHPdoc)
+     * @see jemdev\dbrm\init\getSchemaInfosInterface::_getReferenceFK()
+     */
+    public function getReferenceFK(string $table, string $colonne): array
     {
         $sql  = "SELECT ".
                 "    REFERENCED_TABLE_NAME, ".
@@ -116,10 +116,10 @@ class getSchemaInfosMysql implements getSchemaInfos
     }
 
     /**
-   *(non-PHPdoc)
-    * @see jemdev\dbrm\init\getSchemaInfos::_getConstraints()
-*/
-    public function getConstraints()
+     *(non-PHPdoc)
+     * @see jemdev\dbrm\init\getSchemaInfosInterface::_getConstraints()
+     */
+    public function getConstraints(): array
     {
         $sql  = "SELECT ".
                 "  CONSTRAINT_NAME, ".
@@ -141,10 +141,10 @@ class getSchemaInfosMysql implements getSchemaInfos
     }
 
     /**
-   *(non-PHPdoc)
-    * @see jemdev\dbrm\init\getSchemaInfos::_getTables()
-*/
-    public function getTables()
+     *(non-PHPdoc)
+     * @see jemdev\dbrm\init\getSchemaInfosInterface::_getTables()
+     */
+    public function getTables(): array
     {
         $sql  = "SELECT DISTINCT(c.TABLE_NAME) ".
                 "FROM ". $this->_metaschema .".COLUMNS c ".
@@ -163,9 +163,9 @@ class getSchemaInfosMysql implements getSchemaInfos
 
     /**
      * (non-PHPdoc)
-     * @see jemdev\dbrm\init\getSchemaInfos::_getVues()
+     * @see jemdev\dbrm\init\getSchemaInfosInterface::_getVues()
      */
-    public function getVues()
+    public function getVues(): array
     {
         $sql  = "SELECT ".
                 "    TABLE_NAME ".
@@ -183,9 +183,9 @@ class getSchemaInfosMysql implements getSchemaInfos
 
     /**
      *(non-PHPdoc)
-     * @see jemdev\dbrm\init\getSchemaInfos::_getReferencesFK()
+     * @see jemdev\dbrm\init\getSchemaInfosInterface::_getReferencesFK()
      */
-    public function getReferencesFK($table)
+    public function getReferencesFK(string $table): array
     {
         $sql  = "SELECT ".
                 "    COLUMN_NAME, ".
@@ -204,7 +204,7 @@ class getSchemaInfosMysql implements getSchemaInfos
         return $aRef;
     }
 
-    public function getViewTables($viewName)
+    public function getViewTables(string $viewName): array
     {
         $sql  = "SELECT ".
                 "  view_definition ".
@@ -225,7 +225,6 @@ class getSchemaInfosMysql implements getSchemaInfos
         $aTables = $this->_oSelectTablesName->getTables(true);
         return($aTables);
     }
-
 }
 
 ?>

@@ -14,7 +14,7 @@ namespace jemdev\dbrm;
  *
  * @package     jemdev
  * @subpackage  dbrm
- * @author      Jean Molliné <jmolline@gmail.com>
+ * @author      Jean Molliné <jmolline@jem-dev.com.com>
  */
 class jemdevDbrmException extends \Exception
 {
@@ -27,7 +27,7 @@ class jemdevDbrmException extends \Exception
      * @param   Int         $code           Code de l'erreur
      * @param   \jemdevDbrmException  $precedente     Précédente exception
      */
-    public function __construct($message = null, $code = 0, \Throwable $precedente = null)
+    public function __construct($message = null, $code = 0, $precedente = null)
     {
         parent::__construct($message, $code, $precedente);
         /**

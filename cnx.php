@@ -16,7 +16,7 @@ use jemdev\dbrm\init\genereconf;
 /**
  * Classe principale d'accès aux objets de manipulation de bases de données.
  *
- * @author      Jean Molliné <jmolline@gmail.com>
+ * @author      Jean Molliné <jmolline@jem-dev.com>
  * @package     jemdev
  * @subpackage  dbrm
  */
@@ -25,7 +25,7 @@ class cnx
     /**#@+
      * Messages d'erreurs utilisés dans les levées d'exceptions.
      */
-    const ERREUR_CONF_NULL      = "Configuration de base de données non définie, exécutez jemdev\dbrm\init\genereconf";
+    const ERREUR_CONF_NULL      = "Configuration de base de données non définie, exécutez jemdev\dbrm\init\genereconf avec la méthode cnx::setFichierConf";
     const ERREUR_ACCES_PROP     = "Propriété %s inaccessible ou inexistante de la classe jemdev\dbrm\cnx";
     const ERREUR_CALL_METHODE   = "Méthode %s inaccessible ou inexistante de la classe jemdev\dbrm\cnx";
     const ERREUR_FICHIER_CONF   = "Fichier de configuration de base de données introuvable";
@@ -100,7 +100,7 @@ class cnx
      * @param   String  $prop
      * @return  Mixed
      */
-    public function __get($prop)
+    public function __get(string $prop): mixed
     {
         if(in_array($prop, $this->_aProps['out']))
         {
@@ -143,7 +143,7 @@ class cnx
      * @param   String  $prop
      * @param   Mixed   $val
      */
-    public function __set($prop, $val)
+    public function __set(string $prop, mixed $val): void
     {
         if(in_array($prop, $this->_aProps['in']))
         {
@@ -169,7 +169,7 @@ class cnx
      * @param   Array   $parametres
      * @return  Mixed
      */
-    public function __call($methode, $parametres)
+    public function __call(string $methode, array $parametres): mixed
     {
         $instance = false;
         if(method_exists($this, $methode))
@@ -208,28 +208,27 @@ class cnx
      * @param Int       $port           Port à utiliser pour la connexion au serveur où est information_schema
      * @param String    $schemauserdev  Nom d'utilisateur du schéma à décrire (mode développement)
      * @param String    $schemamdpdev   Mot de passe de l'utilisateur du schéma à décrire (mode développement)
-     * @return  Boolean
+     * @return  bool
      */
     public static function setFichierConf(
-        $rep_conf,
-        $schema,
-        $schemauser,
-        $schemamdp,
-        $rootuser       = 'root',
-        $rootmdp        = '',
-        $typeserveur    = 'mysql',
-        $host           = 'localhost',
-        $port           = null,
-        $schemauserdev  = null,
-        $schemamdpdev   = null
-    )
+        string $rep_conf,
+        string $schema,
+        string $schemauser,
+        string $schemamdp,
+        string $rootuser       = 'root',
+        string $rootmdp        = '',
+        string $typeserveur    = 'mysql',
+        string $host           = 'localhost',
+        int $port           = null,
+        string $schemauserdev  = null,
+        string $schemamdpdev   = null
+    ): bool
     {
-        defined("DS")
-            || define("DS",            DIRECTORY_SEPARATOR);
-        $rep_db = realpath(dirname(__FILE__));
-        $sPathExecute = $rep_db . DS .'dbExecute.php';
-        $sPathVue     = $rep_db . DS .'dbVue.php';
-        $sFichierConf = $rep_conf . DS .'dbConf.php';
+        defined("DS") || define("DS",            DIRECTORY_SEPARATOR);
+        $rep_db         = realpath(dirname(__FILE__));
+        $sPathExecute   = $rep_db . DS .'dbExecute.php';
+        $sPathVue       = $rep_db . DS .'dbVue.php';
+        $sFichierConf   = $rep_conf . DS .'dbConf.php';
         /**
          * On établit la connexion.
          * Pour l'instant, on tapera uniquement sur MySQL donc ce sera dans

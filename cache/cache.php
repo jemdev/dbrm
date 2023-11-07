@@ -1,6 +1,8 @@
 <?php
 namespace jemdev\dbrm\cache;
 use jemdev\dbrm\cache\parseSelect;
+use jemdev\dbrm\Registre;
+
 /**
  * @package     jem
  *
@@ -20,6 +22,21 @@ require(__DIR__ . DIRECTORY_SEPARATOR .'parseSelect.php');
  * Cette constante indique le nom du schéma de données sur lequel on travaille.
  */
 defined('DB_APP_SCHEMA') || define('DB_APP_SCHEMA', 'mydb');
+
+/**
+ * On définit trois constantes si elle ne l'ont pas été dans un fichier de configuration chargé
+ * en amont.
+ * Il est donc très vivement conseillé de définir ces constante dans le fichier de
+ * configuration de l'application.
+ * Ces constante indiquent :
+ * - le chemin vers le répertoire où est situé le fichier de configuration.
+ * - le nom du fichier de configuration du schéma de données.
+ * - le chemin du répertoire de stockage des fichiers de cache.
+ */
+defined("CONF")          || define("CONF",                   "config". DIRECTORY_SEPARATOR);
+defined("DB_CONF")       || define("DB_CONF",                'dbconf.php');
+defined("DB_CACHE")      || define("DB_CACHE",               "db_cache". DIRECTORY_SEPARATOR);
+
 /**
  * Gestion du cache de données.
  *
@@ -41,12 +58,13 @@ defined('DB_APP_SCHEMA') || define('DB_APP_SCHEMA', 'mydb');
  * du cache des données issues en tout ou partie de cette autre table.
  * La méthode cleanCacheTable() est prévue à cet effet.
  *
- * @author      Jean Molliné <jmolline@gmail.com>
+ * @author      Jean Molliné <jmolline@jem-dev.com.com>
  * @package     jemdev
  * @subpackage  dbrm
  */
 class cache
 {
+    const CLE_REGISTRE_MEMCACHED = 'oMemcached';
     private $_repertoireCache;
     private $_validite;
     private $_fichierInfosCache;
@@ -60,9 +78,9 @@ class cache
     private $_oSelectParser;
     /**
      * Instance de Memcache
-     * @var Memcache
+     * @var Memcached
      */
-    private $_oMemcache;
+    private $_oMemcached;
     /**
      * Constructeur.
      *
@@ -72,7 +90,7 @@ class cache
      * @param String    $fichierInfosCache    Chemin absolu vers le fichier de description du stockage de cache.
      * @param Array     $dbVues             Liste des vues SQL, tableaux de résultats de requêtes.
      */
-    public function __construct($repCache = './cache', $duree = 3600, $fichierInfosCache = './infosCache.php', $dbVues = array())
+    public function __construct(string $repCache = './cache', int $duree = 3600, string $fichierInfosCache = './infosCache.php', array $dbVues = array())
     {
         $this->_repertoireCache   = rtrim($repCache, DIRECTORY_SEPARATOR);
         $this->_validite          = $duree;
@@ -89,22 +107,22 @@ class cache
      *
      * @param  String     $requete
      * @param  Array     $resultat
-     * @return Boolean
+     * @return Bool
      */
-    public function setCache($requete, $resultat)
+    public function setCache(string $requete, array $resultat): bool
     {
         $retour = false;
         $key     = md5($requete);
         $fichier = $this->_repertoireCache . DIRECTORY_SEPARATOR . $key .".cache";
         $infos = serialize($resultat);
-        if((CACHE_TYPE == 'memcache' || CACHE_TYPE == 'all') && $this->_oMemcache instanceof \Memcache)
-        {
-            $this->_oMemcache->set(DB_APP_SCHEMA . $key, $infos, MEMCACHE_COMPRESSED, VALIDE_DBCACHE);
-        }
-        elseif((CACHE_TYPE == 'file' || CACHE_TYPE == 'all') && false != $infos && false != ($f = fopen($fichier, 'w')))
+        if((CACHE_TYPE == 'file' || CACHE_TYPE == 'all') && false != $infos && false != ($f = fopen($fichier, 'w')))
         {
             $s = fwrite($f, $infos);
             fclose($f);
+        }
+        elseif((CACHE_TYPE == 'memcached' || CACHE_TYPE == 'all') && $this->_oMemcached instanceof \Memcached)
+        {
+            $this->_oMemcached->set(DB_APP_SCHEMA . $key, $infos, VALIDE_DBCACHE);
         }
         $this->_setInfosCache($requete);
         return($retour);
@@ -120,14 +138,14 @@ class cache
      * @param  String $requete
      * @return Array
      */
-    public function getCache($requete)
+    public function getCache(string $requete): array
     {
         $retour = false;
         $key     = md5($requete);
         $fichier = $this->_repertoireCache . DIRECTORY_SEPARATOR . md5($requete) .".cache";
-        if((CACHE_TYPE == 'memcache' || CACHE_TYPE == 'all') && $this->_oMemcache instanceof \Memcache)
+        if((CACHE_TYPE == 'memcache' || CACHE_TYPE == 'all') && $this->_oMemcached instanceof \Memcached)
         {
-            $datas = $this->_oMemcache->get(DB_APP_SCHEMA . $key);
+            $datas = $this->_oMemcached->get(DB_APP_SCHEMA . $key);
             $retour = (false !== $datas) ? unserialize($datas) : $datas;
         }
         if((CACHE_TYPE == 'file' || CACHE_TYPE == 'all') && false === $retour && file_exists($fichier))
@@ -160,9 +178,9 @@ class cache
      * données ou encore de mise à jour de celles-ci.
      *
      * @param  String $requete
-     * @return Boolean
+     * @return Bool
      */
-    public function resetCache($requete = null)
+    public function resetCache(string $requete = null): bool
     {
         $retour = true;
         if(!is_null($requete))
@@ -209,14 +227,14 @@ class cache
         }
         else
         {
-            if($this->_oMemcache instanceof \Memcache)
+            if($this->_oMemcached instanceof \Memcached)
             {
-                $suppression = $this->_oMemcache->flush();
+                $suppression = $this->_oMemcached->flush();
             }
             elseif(defined('MEMCACHE_ACTIF') && true === MEMCACHE_ACTIF)
             {
-                $this->_oMemcache = Hoa\Registry\Registry::get('oMemcache');
-                $suppression = $this->_oMemcache->flush();
+                $this->_oMemcached = Registre::get(self::CLE_REGISTRE_MEMCACHED);
+                $suppression = $this->_oMemcached->flush();
             }
             if(false !== ($d = opendir(DB_CACHE)))
             {
@@ -254,8 +272,10 @@ class cache
      * détruits et le fichier d'information sera ré-écrit.
      *
      * @param String $table    Nom de la table ayant reçu une écriture.
+     * 
+     * @return bool
      */
-    public function cleanCacheTable($table)
+    public function cleanCacheTable(string $table): bool
     {
         $retour = true;
         $tmpInfosCache = array();
@@ -297,15 +317,24 @@ class cache
     /**
      * Activation du stockage de cache dans memcached.
      *
-     * @param Memcache $oMemcache
+     * @param Memcached $oMemcached
+     * @param string $server
+     * @param int $port
+     * 
+     * @return void
      */
-    public function activerMemcache(\Memcache $oMemcache, $server = 'localhost', $port = 11211)
+    public function activerMemcache(\Memcached $oMemcached, string $server = 'localhost', int $port = 11211): void
     {
-        $this->_oMemcache = $oMemcache;
+        $this->_oMemcached = $oMemcache;
         $oMemcache->addServer($server, $port);
     }
 
-    private function _setInfosCache($requete)
+    /**
+     * @param string $requete
+     * 
+     * @return void
+     */
+    private function _setInfosCache(string $requete): void
     {
         $tmpInfosCache = array();
         if(file_exists($this->_fichierInfosCache))
@@ -347,7 +376,12 @@ class cache
         $ecriture = $this->_writeInfosCache($tmpInfosCache);
     }
 
-    private function _writeInfosCache($aInfosCache)
+    /**
+     * @param array $aInfosCache
+     * 
+     * @return bool
+     */
+    private function _writeInfosCache(array $aInfosCache): bool
     {
         $retour = false;
         include(__DIR__ . DIRECTORY_SEPARATOR .'infosCache.tpl');
@@ -379,7 +413,10 @@ class cache
         return($retour);
     }
 
-    private function _getInfosStockage()
+    /**
+     * @return array
+     */
+    private function _getInfosStockage(): array
     {
         $tmpInfosCache = array();
         $aCacheRequetes = array();
@@ -405,21 +442,26 @@ class cache
         return($tmpInfosCache);
     }
 
-    private function _delKeyCache($k)
+    /**
+     * @param string $k
+     * 
+     * @return bool
+     */
+    private function _delKeyCache(string $k): bool
     {
         $retour = true;
-        if($this->_oMemcache instanceof \Memcache)
+        if($this->_oMemcached instanceof \Memcached)
         {
-            if(false !== ($c = $this->_oMemcache->get(DB_APP_SCHEMA . $k)))
+            if(false !== ($c = $this->_oMemcached->get(DB_APP_SCHEMA . $k)))
             {
                 $key = DB_APP_SCHEMA . $k;
-                $retour = $this->_oMemcache->delete($key);
+                $retour = $this->_oMemcached->delete($key);
             }
         }
         elseif(defined('MEMCACHE_ACTIF') && true === MEMCACHE_ACTIF)
         {
-            $this->_oMemcache = Hoa\Registry\Registry::get('oMemcache');
-            $retour = $this->_oMemcache->delete($key);
+            $this->_oMemcached = Registre::get(self::CLE_REGISTRE_MEMCACHED);
+            $retour = $this->_oMemcached->delete($k);
         }
         $fichier = $this->_repertoireCache . DIRECTORY_SEPARATOR . $k .".cache";
         if(false !== $retour && file_exists($fichier))
@@ -430,5 +472,13 @@ class cache
             }
         }
         return($retour);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCleRegistreMemcached(): string
+    {
+        return self::CLE_REGISTRE_MEMCACHED;
     }
 }

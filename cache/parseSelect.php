@@ -26,7 +26,7 @@ namespace jemdev\dbrm\cache;
  * usage avec d'autres requêtes si nécessaire. Cette méthode est automatiquement
  * utilisée lorsqu'on appelle getTables().
  *
- * @author      Jean Molliné <jmolline@gmail.com>
+ * @author      Jean Molliné <jmolline@jem-dev.com>
  * @since       PHP 5.x.x
  * @package     jemdev
  * @subpackage  db
@@ -45,7 +45,7 @@ class parseSelect
      * la méthode getTables.
      * @param    String    Requête SQL SELECT (optionnel)
      */
-    public function _construct($query = null)
+    public function _construct(string $query = null)
     {
         if(!is_null($query))
         {
@@ -56,7 +56,7 @@ class parseSelect
     /**
      * Lancement automatique du traitement de la requête.
      */
-    private function _init($query)
+    private function _init(string $query)
     {
         $this->_query = $query;
         self::$_hash = md5($query);
@@ -69,7 +69,7 @@ class parseSelect
      * Cette méthode va terminer le travail et stocker la liste des tables
      * dans la propriété de stockage self::$_aSqlQueries.
      */
-    private static function _blocTablesSplit($captures)
+    private static function _blocTablesSplit(array $captures): void
     {
         preg_match_all('#(?:^|,\s)+([^\s]+)#', $captures[1], $tableGroup);
         foreach($tableGroup[1] as $table )
@@ -82,8 +82,10 @@ class parseSelect
      * Initialisation de l'analyse de la requête SQL.
      * La méthode va isoler certains blocs dans la requête et appeler
      * une méthode de callback _blocTablesSplit()
+     * 
+     * @return void
      */
-    private function _parseQuery()
+    private function _parseQuery(): void
     {
         $masque = '#\s*(?:FROM|JOIN)\s+(.+?)\s?(?:ON\s|CROSS\s|LEFT\s|RIGHT\s|INNER\s|OUTER\s|NATURAL\s|JOIN\s|USING\s|GROUP\s|HAVING\s|WHERE|ORDER\s|LIMIT\s|\z)#im';
         preg_replace_callback($masque, "self::_blocTablesSplit", $this->_query);
@@ -94,7 +96,7 @@ class parseSelect
      * @param    String    Requête SQL SELECT
      * @return  jemdev\dbrm\parseSelect    Instance de la classe permettant le chainage des appels de méthode.
      */
-    public function setNewQuery($query)
+    public function setNewQuery(string $query): parseSelect
     {
         $this->_init($query);
         return($this);
@@ -112,7 +114,7 @@ class parseSelect
      * L'index racine est un hachage md5 de la requête, et le tableau
      * contient la requête elle-même et la liste des tables affectées.
      */
-    public function getTables()
+    public function getTables(): array
     {
         $aResult = array();
         foreach(self::$_aSqlQueries AS $hash => $infos)
@@ -130,7 +132,7 @@ class parseSelect
      * Remise à vide des propriétés de l'instance.
      * @return  jemdev\dbrm\parseSelect    Instance de la classe permettant le chainage des appels de méthode.
      */
-    public function reset()
+    public function reset(): parseSelect
     {
         $this->_query       = null;
         self::$_hash        = null;
