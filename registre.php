@@ -72,7 +72,7 @@ class registre extends \ArrayObject
      *
      * @return  object
      */
-    protected static function getInstance(): registre
+    protected static function getInstance(): ArrayObject
     {
         if (null === static::$_instance) {
             static::$_instance = new parent();
