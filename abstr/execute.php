@@ -2,7 +2,7 @@
 namespace jemdev\dbrm\abstr;
 use jemdev\dbrm\jemdevDbrmException;
 use jemdev\dbrm\cache\cache;
-use jemdev\dbrm\Registre;
+use jemdev\dbrm\registre;
 /**
  * @package     jemdev
  *
@@ -126,13 +126,13 @@ abstract class execute
                 }
                 $this->_oCache = new cache(DB_CACHE, VALIDE_DBCACHE, INFOS_DBCACHE, $this->_aListeVues);
                 $cleMemcached = $this->_oCache->getCleRegistreMemcached();
-                $oMemcached = Registre::isRegistered($cleMemcached) ? Registre::get($cleMemcached) : false;
+                $oMemcached = registre::isRegistered($cleMemcached) ? registre::get($cleMemcached) : false;
                 if(true == MEMCACHE_ACTIF)
                 {
                     if(false === $oMemcached && class_exists('Memcached', true))
                     {
                         $oMemcached = new \Memcached;
-                        Registre::set($cleMemcached, $oMemcached);
+                        registre::set($cleMemcached, $oMemcached);
                     }
                     $this->_oCache->activerMemcache($oMemcached, MEMCACHE_SERVER, MEMCACHE_PORT);
                 }
@@ -155,7 +155,7 @@ abstract class execute
      */
     protected function _connect(array $aInfosCnx): void
     {
-        if(false === (Registre::isRegistered('dbCnx')))
+        if(false === (registre::isRegistered('dbCnx')))
         {
             $dns  = $aInfosCnx['pilote'];
             $dns .= ':host=' . $aInfosCnx['server'];
@@ -165,7 +165,7 @@ abstract class execute
             try
             {
                 $this->_dbh = new \PDO($dns, $aInfosCnx['user'], $aInfosCnx['mdp'], $options);
-                Registre::set('dbCnx', $this->_dbh);
+                registre::set('dbCnx', $this->_dbh);
                 $this->_dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
                 $this->_bConnecte = true;
             }
@@ -190,7 +190,7 @@ abstract class execute
         }
         else
         {
-            $this->_dbh = Registre::get('dbCnx');
+            $this->_dbh = registre::get('dbCnx');
             $this->_bConnecte = true;
         }
     }
