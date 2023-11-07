@@ -48,7 +48,7 @@ class registre extends \ArrayObject
     /**
      * Instance.
      *
-     * @var \jemdev\dbrm\Registre
+     * @var \jemdev\dbrm\registre
      */
     private static $_instance = null;
 

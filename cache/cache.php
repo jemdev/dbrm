@@ -1,7 +1,7 @@
 <?php
 namespace jemdev\dbrm\cache;
 use jemdev\dbrm\cache\parseSelect;
-use jemdev\dbrm\Registre;
+use jemdev\dbrm\registre;
 
 /**
  * @package     jem
@@ -233,7 +233,7 @@ class cache
             }
             elseif(defined('MEMCACHE_ACTIF') && true === MEMCACHE_ACTIF)
             {
-                $this->_oMemcached = Registre::get(self::CLE_REGISTRE_MEMCACHED);
+                $this->_oMemcached = registre::get(self::CLE_REGISTRE_MEMCACHED);
                 $suppression = $this->_oMemcached->flush();
             }
             if(false !== ($d = opendir(DB_CACHE)))
@@ -460,7 +460,7 @@ class cache
         }
         elseif(defined('MEMCACHE_ACTIF') && true === MEMCACHE_ACTIF)
         {
-            $this->_oMemcached = Registre::get(self::CLE_REGISTRE_MEMCACHED);
+            $this->_oMemcached = registre::get(self::CLE_REGISTRE_MEMCACHED);
             $retour = $this->_oMemcached->delete($k);
         }
         $fichier = $this->_repertoireCache . DIRECTORY_SEPARATOR . $k .".cache";
