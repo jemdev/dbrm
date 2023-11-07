@@ -36,14 +36,14 @@
 namespace jemdev\dbrm;
 
 /**
- * Class \jemdev\dbrm\Registre.
+ * Class \jemdev\dbrm\registre.
  *
  * Conserve un enregistrement de quelque chose.
  *
  * @copyright  Copyright © 2007-2017 Hoa community
  * @license    New BSD License
  */
-class Registre extends \ArrayObject
+class registre extends \ArrayObject
 {
     /**
      * Instance.
