@@ -340,4 +340,69 @@ class vue extends execute
     {
         return ['Instance of PDO'];
     }
+
+    /**
+     * Récupération des valeurs par défaut et valeurs acceptées pour des
+     * colonnes de type ENUM dans le fichier de description de la configuraiton
+     * du schéma de données.
+     * Le tableau de retour sera de la forme :
+     * $infos = [
+     *     'default' => "valeur",
+     *     'vals'    => ["valeur", "valeur2", "valeur3", ...]
+     * ]
+     * 
+     * Attention, si plusieurs schémas de données sont configurés dans le fichier de
+     * configuration, il sera prudent d'inquer le nom du schéma visé pour le cas où le
+     * même nom de table serait trouvé dans plus d'un schéma.
+     * 
+     * @param string        $nomtable      Nom de la table dans laquelle on cherche la colonne;
+     * @param string        $nomcolonne    Nom de la colonne
+     * @param string|null   $nomschema     Nom du schéma de données (optionnel)
+     * 
+     * @return array    Retourne un tableau avec la valeur par défaut de la colonne, et les
+     *                  valeurs acceptées ou false si la colonne n'est pas trouvée
+     * 
+     * @return array
+     */
+    public function getValeurDefautColonneEnum(string $nomtable, string $nomcolonne, ?string $nomschema = null): array|false
+    {
+        include_once($this->_cheminFichierDbConf);
+        $retour = false;
+        $aTt = ['tables', 'relations'];
+        $ids = null;
+        if(!is_null($nomschema))
+        {
+            foreach($dbConf as $s => $schema)
+            {
+                if($schema['name'] == $nomschema)
+                {
+                    $ids = $s;
+                }
+            }
+        }
+        foreach($dbConf as $s => $schema)
+        {
+            foreach($aTt as $type)
+            {
+                if(is_null($ids) || $s == $ids)
+                {
+                    foreach($schema[$type] as $t => $table)
+                    {
+                        if($t = $nomtable)
+                        {
+                            foreach($table['fields'] as $f => $colonne)
+                            {
+                                if($f == $nomcolonne)
+                                {
+                                    $retour = $f['attr'];
+                                    break(4);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $retour;
+    }
 }
