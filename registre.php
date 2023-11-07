@@ -68,11 +68,11 @@ class registre extends \ArrayObject
     }
 
     /**
-     * Récupération d'une instance de \jemdev\dbrm\Registre.
+     * Récupération d'une instance de \jemdev\dbrm\registre.
      *
      * @return  object
      */
-    protected static function getInstance(): Registre
+    protected static function getInstance(): registre
     {
         if (null === static::$_instance) {
             static::$_instance = new parent();
