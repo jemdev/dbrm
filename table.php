@@ -23,7 +23,7 @@ $repDb = realpath(dirname(__FILE__));
  *
  * @package     jemdev
  * @subpackage  dbrm
- * @author      Jean Molliné <jmolline@gmail.com>
+ * @author      Jean Molliné <jmolline@jem-dev.com>
  */
 class table
 {
@@ -41,7 +41,7 @@ class table
      *
      * @return jemdev\dbrm\ligneInstance
      */
-    public function getInstance()
+    public function getInstance(): ligneInstance
     {
         return $this->_oLigneInstance;
     }
