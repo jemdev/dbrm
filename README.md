@@ -181,7 +181,7 @@ Les tables sur lesquelles s'appuient notre exemple auront la forme suivante :
 +-------------------+------------------+------+-----+---------+----------------+
 ```
 
-**Note importante** : vous ne pourrez pas définir vous-même la valeur de la clé primaire en insérant une nouvelle ligne de données. Cette valeur sera générée automatiquement par le SGBD si cette colonne est bien en `auto-increment`. Lorsqu'on initialise une ligne de données, on peut en option indiquer la valeur de cette clé primaire si on la connaît : le cas échéant, les colonnes seront alors alimentées avec les valeurs correspondant à cette ligne, sinon, nous aurons une ligne vide prête à compléter.
+**Note importante** : vous ne pourrez pas définir vous-même la valeur de la clé primaire en insérant une nouvelle ligne de données. Cette valeur sera générée automatiquement par le SGBD si cette colonne est bien en `auto-increment` (MySQL et certains SGBDR. Pour d'autres comme Oracle qui ne disposent pas de cette fonctionnalité, il sera avisé de mettre en place pour chaque table une séquence et un trigger *before insert* pour générer la clé primaire automatiquement). Lorsqu'on initialise une ligne de données, on peut en option indiquer la valeur de cette clé primaire si on la connaît : le cas échéant, les colonnes seront alors alimentées avec les valeurs correspondant à cette ligne, sinon, nous aurons une ligne vide prête à compléter.
 À présent, écrivons une ligne de données :
 ```php
 <?php
@@ -249,6 +249,8 @@ else
     // Ici, le code permettant la gestion de l'erreur selon vos propres manières de faire.
 }
 ```
+### Les erreurs possibles
+Lors de l'insertion des données, une vérification est automatiquement effectuée. Si une colonne requiert obligatoirement une valeur et qu'aucune n'est envoyée, une eexception sera levée. Le type de donnée sera également vérifié et selon le cas, une exception pourra être levée si une donnée n'est pas conforme au modèle de données défini.
 ### En résumé : l'instance d'une table
 Lorsque vous créez une instance pour une table donnée, chaque colonne de cette table devient une propriété de cette instance. Ainsi, la colonne `int_nom` est une propriété de l'objet `$oInterlocuteur` et peut donc être invoquée comme une propriété publique de l'objet.
 Si vous essayez d'affecter une valeur sur une colonne qui n'existe pas dans la table considérée, une exception sera levée. De même que vous ne pourrez pas affecter une valeur arbitraire sur une clé primaire.
@@ -448,7 +450,7 @@ switch (MODE)
         $db_root_schema = "INFORMATION_SCHEMA";
         break;
     case 'test':
-        $db_app_server = 'bxex.myd.infomaniak.com';
+        $db_app_server = 'localhost';
         $db_app_port   = '3306';
         $db_app_schema = 'monshematest';
         $db_app_user   = 'monutilisateurtest';
@@ -458,7 +460,7 @@ switch (MODE)
         break;
     case 'prd':
     case 'prod':
-        $db_app_server = 'bxex.myd.infomaniak.com';
+        $db_app_server = 'localhost';
         $db_app_port   = '3306';
         $db_app_schema = 'monshema';
         $db_app_user   = 'monutilisateur';
