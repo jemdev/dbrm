@@ -310,7 +310,7 @@ class vue extends execute
      */
     public function getValeursChampsEnum($table, $colonne)
     {
-        $retour = false;
+        $retour = [];
         if(isset($this->_aConfig['tables'][$table]))
         {
             $t = 'tables';
@@ -338,6 +338,10 @@ class vue extends execute
                     $retour['vals']    = null;
                 }
             }
+        }
+        if(empty($retour))
+        {
+            $retour = false;
         }
         return $retour;
     }
