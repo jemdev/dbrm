@@ -266,7 +266,7 @@ class ligneInstance extends execute
                 {
                     if(isset($schema['schema']['name']) && $schema['schema']['name'] == $_schema)
                     {
-                        self::$_aInstances[$_sNomTable][$_aliasTable]= new ligneInstance($_schema, $_sNomTable, $schema, $_aliasTable);
+                        self::$_aInstances[$_sNomTable][$_aliasTable]= new ligneInstance($_schema, $_sNomTable, $aConfig, $_aliasTable);
                         break;
                     }
                 }
