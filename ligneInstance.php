@@ -343,7 +343,7 @@ class ligneInstance extends execute
             }
             else
             {
-                $valeur = trim($valeur);
+                $valeur = (!empty($valeur)) ? trim($valeur) : $valeur;
                 $typeData = 'null';
                 try
                 {
