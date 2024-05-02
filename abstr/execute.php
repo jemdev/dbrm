@@ -277,9 +277,9 @@ abstract class execute
      * @param string $sql
      * @param array $params
      * 
-     * @return array
+     * @return array | bool tableau de données ou false si vide
      */
-    protected function _fetchAssoc(string $sql, array $params): array
+    protected function _fetchAssoc(string $sql, array $params): mixed
     {
         $result = $this->_fetchDatas($sql, $params, 'assoc');
         return $result;
@@ -289,9 +289,9 @@ abstract class execute
      * @param string $sql
      * @param array $params
      * 
-     * @return array
+     * @return array  | bool nombre ou false si vide
      */
-    protected function _fetchNum(string $sql, array $params): array
+    protected function _fetchNum(string $sql, array $params): mixed
     {
         $result = $this->_fetchDatas($sql, $params, 'num');
         return $result;
@@ -301,9 +301,9 @@ abstract class execute
      * @param string $sql
      * @param array $params
      * 
-     * @return object
+     * @return object | bool objet traversable ou false si vide
      */
-    protected function _fetchObject(string $sql, array $params): object
+    protected function _fetchObject(string $sql, array $params): mixed
     {
         $result = $this->_fetchDatas($sql, $params, 'object');
         return $result;
@@ -313,7 +313,7 @@ abstract class execute
      * @param string $sql
      * @param array $params
      * 
-     * @return mixed
+     * @return mixed | bool donnée ou false si vide
      */
     protected function _fetchOne(string $sql, array $params): mixed
     {
@@ -325,9 +325,9 @@ abstract class execute
      * @param string $sql
      * @param array $params
      * 
-     * @return array
+     * @return array | bool tableau de données ou false si vide
      */
-    protected function _fetchArray(string $sql, array $params): array
+    protected function _fetchArray(string $sql, array $params): mixed
     {
         $result = $this->_fetchDatas($sql, $params, 'array');
         return $result;
@@ -337,9 +337,9 @@ abstract class execute
      * @param string $sql
      * @param array $params
      * 
-     * @return array
+     * @return array | bool tableau de données ou false si vide
      */
-    protected function _fetchLine(string $sql, array $params): array
+    protected function _fetchLine(string $sql, array $params): mixed
     {
         $result = $this->_fetchDatas($sql, $params, 'line');
         return $result;
