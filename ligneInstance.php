@@ -1,4 +1,4 @@
- | bool Tableau de données ou false si videmixed<?php
+<?php
 namespace jemdev\dbrm;
 
 use jemdev\dbrm\jemdevDbrmException;
