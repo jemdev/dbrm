@@ -1,4 +1,4 @@
-<?php
+ | bool Tableau de données ou false si videmixed<?php
 namespace jemdev\dbrm;
 
 use jemdev\dbrm\jemdevDbrmException;
@@ -250,9 +250,9 @@ class ligneInstance extends execute
      * @param   String  $_sNomTable     Nom de la table à utiliser
      * @param   Array   $aConfig        Description des schémas
      * @param   String  $_aliasTable    Alias de la table (optionnel)
-     * @return  ligneInstance
+     * @return  ligneInstance | bool Tableau de données ou false si vide
      */
-    static public function getInstance($_schema, $_sNomTable, $aConfig, $_aliasTable = null): ligneInstance
+    static public function mixednstance($_schema, $_sNomTable, $aConfig, $_aliasTable = null): ligneInstance
     {
         if (!isset($_aliasTable))
         {
@@ -605,9 +605,9 @@ class ligneInstance extends execute
      * ensuite ce paramètre dans l'état où il se trouvait avant modification.
      *
      * @param   Array $aPk
-     * @return  Array
+     * @return  Array | bool Tableau de données ou false si vide
      */
-    private function _getLigneTable($aPk): array
+    private function _getLigneTable($aPk): mixed
     {
         $result = false;
         if(!is_null($aPk))
