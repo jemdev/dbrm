@@ -252,7 +252,7 @@ class ligneInstance extends execute
      * @param   String  $_aliasTable    Alias de la table (optionnel)
      * @return  ligneInstance | bool Tableau de données ou false si vide
      */
-    static public function mixednstance($_schema, $_sNomTable, $aConfig, $_aliasTable = null): ligneInstance
+    static public function getInstance($_schema, $_sNomTable, $aConfig, $_aliasTable = null): ligneInstance
     {
         if (!isset($_aliasTable))
         {
