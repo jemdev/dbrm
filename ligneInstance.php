@@ -816,6 +816,13 @@ class ligneInstance extends execute
      */
     private function _inserer($aCols, $aParams, $in): bool
     {
+        foreach($in as $p => $param)
+        {
+            if($param == 'NULL')
+            {
+                $in[$p] = null;
+            }
+        }
         /* Code d'ajout de données dans la base */
         $sql = "INSERT INTO ". $this->_sNomTable ."(";
         $sql .= implode(", ", $aCols);
@@ -845,6 +852,13 @@ class ligneInstance extends execute
 
     private function _mettreajour($aCols, $aParams, $in): bool
     {
+        foreach($in as $p => $param)
+        {
+            if($param == 'NULL')
+            {
+                $in[$p] = null;
+            }
+        }
         // Code de mise à jour d'une ligne de données
         $aSet = [];
         foreach($aCols as $i => $col)
