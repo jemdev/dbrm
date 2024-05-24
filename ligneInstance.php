@@ -645,9 +645,9 @@ class ligneInstance extends execute
      *
      * En cas d'erreur, une exception sera levée.
      *
-     * @return Bool
+     * @return mixed Retourne un booléen ou une exception si une erreur survient
      */
-    public function supprimer(): bool
+    public function supprimer(): mixed
     {
         // code de suppression de données.
         $retour = false;
