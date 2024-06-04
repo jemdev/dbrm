@@ -347,7 +347,7 @@ class ligneInstance extends execute
                 $typeData = 'null';
                 try
                 {
-                    if(empty($valeur) && $valeur !== '0' && $valeur !== 0)
+                    if(empty($valeur) && $valeur !== '0' && $valeur !== 0 && $valeur !== 0.00)
                     {
                         /**
                          * Si la valeur envoyée est vide ou nulle, soit la colonne est « nullable », soit
@@ -367,7 +367,7 @@ class ligneInstance extends execute
                             }
                             else
                             {
-                                throw new jemdevDbrmException("Une valeur est obligatoirement requise dans la table ". $this->_sNomTable ." pour la colonne ". $colonne, E_USER_WARNING);
+                                throw new jemdevDbrmException("Une valeur est obligatoirement requise dans la table ". $this->_sNomTable ." pour la colonne ". $colonne ."; Valeur reçue « ". $valeur ." »", E_USER_WARNING);
                             }
                         }
                     }
